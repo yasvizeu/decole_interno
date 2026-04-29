@@ -377,7 +377,7 @@ tr:hover td{background:#f8fafc;}
         <span class="icon">📚</span> Cursos
       </button>
       <button class="nav-item" onclick="showPanel('configurar')" id="nav-configurar">
-        <span class="icon">⚙️</span> Configurar Sheets
+        <span class="icon">⚙️</span> Configurações
       </button>
     </nav>
     <div class="sidebar-footer">
@@ -479,133 +479,32 @@ tr:hover td{background:#f8fafc;}
     <!-- CONFIGURAR -->
     <div class="panel" id="panel-configurar">
       <div class="config-card">
-        <h3>🔗 Conectar ao Google Sheets</h3>
-        <p>Para o painel funcionar, você precisa criar uma planilha no Google Sheets e publicar um Apps Script como API. Siga os passos:</p>
+        <h3>🔑 Token do GitHub</h3>
+        <p>O painel salva os dados diretamente no seu repositório via GitHub API. Para isso, você precisa de um <strong>Personal Access Token</strong>. O token fica salvo só no seu navegador — nunca no código.</p>
         <div class="step-list">
-          <div class="step-item"><div class="step-num">1</div><div class="step-text">Acesse <strong>sheets.google.com</strong> e crie uma nova planilha chamada <strong>Decole - Dados</strong></div></div>
-          <div class="step-item"><div class="step-num">2</div><div class="step-text">Crie uma aba chamada <strong>cursos</strong> e outra chamada <strong>modulos</strong></div></div>
-          <div class="step-item"><div class="step-num">3</div><div class="step-text">No menu, vá em <strong>Extensões → Apps Script</strong> e cole o código abaixo</div></div>
-          <div class="step-item"><div class="step-num">4</div><div class="step-text">Clique em <strong>Implantar → Nova implantação → App da Web</strong> — acesso para <strong>Qualquer pessoa</strong></div></div>
-          <div class="step-item"><div class="step-num">5</div><div class="step-text">Copie a URL gerada e cole no campo abaixo</div></div>
+          <div class="step-item"><div class="step-num">1</div><div class="step-text">Acesse <strong>github.com → Settings → Developer settings → Personal access tokens → Tokens (classic)</strong></div></div>
+          <div class="step-item"><div class="step-num">2</div><div class="step-text">Clique em <strong>Generate new token (classic)</strong>, dê um nome e marque o escopo <strong>repo</strong></div></div>
+          <div class="step-item"><div class="step-num">3</div><div class="step-text">Copie o token gerado e cole no campo abaixo</div></div>
         </div>
-        <div class="code-block" id="appsScriptCode">// Cole este código no Google Apps Script
-// Após colar: Implantar > Gerenciar implantações > editar > Nova versão > Implantar
-
-function doGet(e) {
-  const action   = e.parameter.action;
-  const callback = e.parameter.callback; // JSONP support
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-
-  function out(obj) {
-    const json = JSON.stringify(obj);
-    const body = callback ? callback + '(' + json + ')' : json;
-    const mime = callback
-      ? ContentService.MimeType.JAVASCRIPT
-      : ContentService.MimeType.JSON;
-    return ContentService.createTextOutput(body).setMimeType(mime);
-  }
-
-  // ── LEITURA ──────────────────────────────────────
-  if (action === 'getCursos') {
-    const sheet = ss.getSheetByName('cursos');
-    if (!sheet || sheet.getLastRow() < 2) return out({ok:true, data:[]});
-    const [headers, ...rows] = sheet.getDataRange().getValues();
-    return out({ok:true, data: rows.map(r => {
-      const o = {}; headers.forEach((h,i) => o[h] = r[i]); return o;
-    })});
-  }
-
-  if (action === 'getModulos') {
-    const sheet = ss.getSheetByName('modulos');
-    if (!sheet || sheet.getLastRow() < 2) return out({ok:true, data:[]});
-    const [headers, ...rows] = sheet.getDataRange().getValues();
-    return out({ok:true, data: rows.map(r => {
-      const o = {}; headers.forEach((h,i) => o[h] = r[i]); return o;
-    })});
-  }
-
-  // ── ESCRITA via GET + payload ─────────────────────
-  const raw = e.parameter.payload;
-  if (!raw) return out({ok:false, error:'missing payload'});
-  const data = JSON.parse(decodeURIComponent(raw));
-
-  if (action === 'saveCurso') {
-    const sheet = ss.getSheetByName('cursos');
-    const HEADERS = ['id','nome','descricao','paraQuem','duracao','mensalidade',
-                     'valorTotal','materialTotal','materialVista','materialParcelado',
-                     'slug','updatedAt'];
-    if (sheet.getLastRow() === 0) sheet.appendRow(HEADERS);
-    const allData = sheet.getDataRange().getValues();
-    const ids = allData.map(r => String(r[0]));
-    const rowIndex = ids.indexOf(String(data.id));
-    const row = HEADERS.map(h => data[h] !== undefined ? data[h] : '');
-    if (rowIndex > 0) {
-      sheet.getRange(rowIndex + 1, 1, 1, row.length).setValues([row]);
-    } else {
-      sheet.appendRow(row);
-    }
-    return out({ok:true});
-  }
-
-  if (action === 'saveModulos') {
-    const sheet = ss.getSheetByName('modulos');
-    const HEADERS = ['id','cursoId','titulo','descricao','ordem'];
-    if (sheet.getLastRow() === 0) sheet.appendRow(HEADERS);
-    const allData = sheet.getDataRange().getValues();
-    for (let i = allData.length - 1; i >= 1; i--) {
-      if (String(allData[i][1]) === String(data.cursoId)) sheet.deleteRow(i + 1);
-    }
-    data.modulos.forEach((mod, i) => {
-      sheet.appendRow([mod.id, data.cursoId, mod.titulo, mod.descricao || '', i + 1]);
-    });
-    return out({ok:true});
-  }
-
-  if (action === 'deleteCurso') {
-    const sheet = ss.getSheetByName('cursos');
-    const allData = sheet.getDataRange().getValues();
-    const ids = allData.map(r => String(r[0]));
-    const rowIndex = ids.indexOf(String(data.id));
-    if (rowIndex > 0) sheet.deleteRow(rowIndex + 1);
-    const modSheet = ss.getSheetByName('modulos');
-    if (modSheet && modSheet.getLastRow() > 1) {
-      const modData = modSheet.getDataRange().getValues();
-      for (let i = modData.length - 1; i >= 1; i--) {
-        if (String(modData[i][1]) === String(data.id)) modSheet.deleteRow(i + 1);
-      }
-    }
-    return out({ok:true});
-  }
-
-  return out({ok:false, error:'action not found'});
-}</div>
-        <button class="btn btn-secondary btn-sm" onclick="copyScript()">📋 Copiar código</button>
-      </div>
-
-      <div class="config-card">
-        <h3>🔑 URL da sua API</h3>
-        <p>Cole aqui a URL gerada após implantar o Apps Script como App da Web.</p>
         <div class="field-group" style="margin-bottom:12px;">
-          <label>URL do Apps Script</label>
-          <input type="url" id="sheetsUrlInput" placeholder="https://script.google.com/macros/s/XXXXXX/exec"/>
+          <label>Personal Access Token</label>
+          <input type="password" id="ghTokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"/>
         </div>
-        <div style="display:flex;gap:10px;">
-          <button class="btn btn-primary" onclick="saveConfig()">💾 Salvar e testar</button>
-          <button class="btn btn-secondary" onclick="testConnection()">🔄 Testar conexão</button>
-        </div>
-        <p class="field-hint" style="margin-top:10px;" id="configFeedback"></p>
+        <button class="btn btn-primary" onclick="saveToken()">💾 Salvar token e conectar</button>
+        <p class="field-hint" style="margin-top:10px;">🔒 O token é salvo apenas no localStorage do seu navegador. Cada computador precisa configurar uma vez.</p>
       </div>
 
       <div class="config-card">
-        <h3>📋 Cabeçalhos das abas</h3>
-        <p>Na aba <strong>cursos</strong>, a primeira linha deve ter exatamente estes cabeçalhos (já inseridos automaticamente pelo script):</p>
-        <div class="code-block">id | nome | descricao | paraQuem | duracao | mensalidade | valorTotal | materialTotal | materialVista | materialParcelado | slug | updatedAt</div>
-        <p style="font-size:0.83rem;color:var(--muted);">Na aba <strong>modulos</strong>:</p>
-        <div class="code-block">id | cursoId | titulo | descricao | ordem</div>
+        <h3>📁 Como funciona</h3>
+        <p>Ao salvar um curso, o painel cria ou atualiza o arquivo <strong>data.json</strong> no repositório <strong>yasvizeu/decole_interno</strong>. O site vitrine lê esse mesmo arquivo para exibir os cursos ao público.</p>
+        <div class="code-block">Repositório: yasvizeu/decole_interno
+Arquivo:     data.json
+Formato:     { "cursos": [ ... ], "updatedAt": "..." }</div>
+        <p style="font-size:0.83rem;color:var(--muted);margin-top:10px;">⚠️ O repositório precisa ser <strong>público</strong> para o site vitrine conseguir ler os dados.</p>
       </div>
     </div>
 
-  </main><!-- /main -->
+    </main><!-- /main -->
 </div><!-- /app -->
 
 <!-- ══ MODAL CURSO ══════════════════════════════════════════════ -->
@@ -692,13 +591,16 @@ function doGet(e) {
 
 <script>
 // ══ CONFIG ══════════════════════════════════════════════════════
-const SENHA = 'decole2025';
-const GITHUB_TOKEN = 'cole_seu_token_aqui';
+const SENHA       = 'decole2025';
 const GITHUB_USER = 'yasvizeu';
 const GITHUB_REPO = 'decole_interno';
-let SHEETS_URL = localStorage.getItem('decole_sheets_url') || '';
-let cursosData = [];
-let editingId = null;
+const DATA_FILE   = 'data.json';
+const RAW_URL     = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${DATA_FILE}`;
+const API_URL     = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
+// Token fica no localStorage — nunca no código público
+let GITHUB_TOKEN  = localStorage.getItem('decole_gh_token') || '';
+let cursosData    = [];
+let editingId     = null;
 
 // ══ LOGIN ══════════════════════════════════════════════════════
 function doLogin(){
@@ -722,7 +624,7 @@ function doLogout(){
 // ══ SIDEBAR ══════════════════════════════════════════════════
 function toggleSidebar(){
   document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('overlayBg').style.display = 
+  document.getElementById('overlayBg').style.display =
     document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none';
 }
 function closeSidebar(){
@@ -732,9 +634,9 @@ function closeSidebar(){
 
 // ══ PANELS ══════════════════════════════════════════════════
 const PANELS = {
-  dashboard: { title:'Dashboard', sub:'Visão geral dos cursos da Decole' },
-  cursos:    { title:'Cursos', sub:'Adicione, edite e remova cursos' },
-  configurar:{ title:'Configurações', sub:'Conecte o painel ao Google Sheets' }
+  dashboard:  { title:'Dashboard',    sub:'Visão geral dos cursos da Decole' },
+  cursos:     { title:'Cursos',       sub:'Adicione, edite e remova cursos' },
+  configurar: { title:'Configurações',sub:'Configure o token do GitHub' }
 };
 function showPanel(id){
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -750,86 +652,84 @@ function showPanel(id){
 
 // ══ INIT ══════════════════════════════════════════════════════
 function init(){
-  if(SHEETS_URL) document.getElementById('sheetsUrlInput').value = SHEETS_URL;
+  const tokenInput = document.getElementById('ghTokenInput');
+  if(tokenInput) tokenInput.value = GITHUB_TOKEN;
   loadCursos();
 }
 
-// ══ API CALLS ══════════════════════════════════════════════════
-// JSONP — unica forma de contornar CORS com Google Apps Script
-function jsonp(url) {
-  return new Promise((resolve, reject) => {
-    const cbName = 'decole_cb_' + Date.now() + '_' + Math.floor(Math.random()*9999);
-    const script = document.createElement('script');
-    const timer = setTimeout(() => {
-      cleanup();
-      reject(new Error('JSONP timeout'));
-    }, 12000);
-    function cleanup() {
-      delete window[cbName];
-      if (script.parentNode) script.parentNode.removeChild(script);
-      clearTimeout(timer);
+// ══ GITHUB API ════════════════════════════════════════════════
+async function ghRead(){
+  // Lê o data.json do repo (sem autenticação — repo público)
+  try {
+    const res = await fetch(RAW_URL + '?t=' + Date.now());
+    if(!res.ok) return null;
+    return await res.json();
+  } catch(e) { return null; }
+}
+
+async function ghWrite(data){
+  if(!GITHUB_TOKEN) throw new Error('Token não configurado');
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+
+  // Pega o SHA atual do arquivo (necessário para atualizar)
+  let sha = null;
+  try {
+    const meta = await fetch(API_URL, {
+      headers: {
+        'Authorization': 'token ' + GITHUB_TOKEN,
+        'Accept': 'application/vnd.github.v3+json'
+      }
+    });
+    if(meta.ok){
+      const json = await meta.json();
+      sha = json.sha;
     }
-    window[cbName] = function(data) {
-      cleanup();
-      resolve(data);
-    };
-    script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
-    script.onerror = () => { cleanup(); reject(new Error('JSONP load error')); };
-    document.head.appendChild(script);
+  } catch(e) {}
+
+  const body = {
+    message: 'Atualização de cursos via painel Decole',
+    content,
+    ...(sha ? { sha } : {})
+  };
+
+  const res = await fetch(API_URL, {
+    method: 'PUT',
+    headers: {
+      'Authorization': 'token ' + GITHUB_TOKEN,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
   });
-}
 
-async function apiGet(action) {
-  if (!SHEETS_URL) return null;
-  try {
-    const data = await jsonp(SHEETS_URL + '?action=' + action);
-    return data.ok ? data.data : null;
-  } catch(e) {
-    console.warn('apiGet error:', e);
-    return null;
+  if(!res.ok){
+    const err = await res.json();
+    throw new Error(err.message || 'Erro ao salvar no GitHub');
   }
-}
-
-async function apiWrite(action, data) {
-  if (!SHEETS_URL) throw new Error('URL nao configurada');
-  const payload = encodeURIComponent(JSON.stringify(data));
-  const url = SHEETS_URL + '?action=' + action + '&payload=' + payload;
-  try {
-    const result = await jsonp(url);
-    return result;
-  } catch(e) {
-    console.warn('apiWrite error:', e);
-    throw e;
-  }
+  return await res.json();
 }
 
 // ══ LOAD CURSOS ══════════════════════════════════════════════
 async function loadCursos(){
   setStatus('loading');
-  const [cursos, modulos] = await Promise.all([
-    apiGet('getCursos'),
-    apiGet('getModulos')
-  ]);
-  if(cursos === null && !SHEETS_URL){
-    setStatus('none');
-    cursosData = getSampleData();
-  } else if(cursos === null){
-    setStatus('error');
-    cursosData = getSampleData();
-  } else {
+  const data = await ghRead();
+  if(data && Array.isArray(data.cursos)){
+    cursosData = data.cursos;
     setStatus('ok');
-    // Attach modules to courses
-    cursosData = cursos.map(c => ({
-      ...c,
-      modulos: (modulos || []).filter(m => m.cursoId === c.id)
-    }));
+  } else {
+    // Sem arquivo ainda ou erro — carrega local
+    cursosData = JSON.parse(localStorage.getItem('decole_cursos') || '[]');
+    setStatus(GITHUB_TOKEN ? 'error' : 'none');
   }
   renderDashboard();
   renderCursos();
 }
 
-function getSampleData(){
-  return JSON.parse(localStorage.getItem('decole_cursos') || '[]');
+// ══ SALVAR NO GITHUB ══════════════════════════════════════════
+async function saveToGitHub(){
+  const payload = { cursos: cursosData, updatedAt: new Date().toISOString() };
+  await ghWrite(payload);
+  localStorage.setItem('decole_cursos', JSON.stringify(cursosData));
 }
 
 // ══ STATUS ══════════════════════════════════════════════════
@@ -837,9 +737,9 @@ function setStatus(state){
   const dot = document.getElementById('statusDot');
   const txt = document.getElementById('statusText');
   dot.className = 'status-dot';
-  if(state === 'ok'){ dot.classList.add('ok'); txt.textContent = 'Sheets conectado'; }
-  else if(state === 'error'){ dot.classList.add('err'); txt.textContent = 'Erro na conexão'; }
-  else if(state === 'none'){ txt.textContent = 'Sheets não configurado'; }
+  if(state === 'ok')    { dot.classList.add('ok');  txt.textContent = 'GitHub conectado'; }
+  else if(state === 'error') { dot.classList.add('err'); txt.textContent = 'Erro na conexão'; }
+  else if(state === 'none')  { txt.textContent = 'Token não configurado'; }
   else { txt.textContent = 'Verificando...'; }
 }
 
@@ -908,8 +808,6 @@ function openCursoModal(id){
   editingId = id || null;
   document.getElementById('modalTitle').textContent = id ? 'Editar curso' : 'Novo curso';
   const curso = id ? cursosData.find(c=>c.id===id) : null;
-
-  // Fill fields
   document.getElementById('f-nome').value = curso?.nome || '';
   document.getElementById('f-desc').value = curso?.descricao || '';
   document.getElementById('f-paraQuem').value = curso?.paraQuem || '';
@@ -919,22 +817,17 @@ function openCursoModal(id){
   document.getElementById('f-materialTotal').value = curso?.materialTotal || '';
   document.getElementById('f-materialVista').value = curso?.materialVista || '';
   document.getElementById('f-materialParcelado').value = curso?.materialParcelado || '';
-
-  // Modules
   const container = document.getElementById('modulesContainer');
   container.innerHTML = '';
   const mods = curso?.modulos || [];
   mods.forEach(m => addModulo(m.titulo, m.descricao, m.id));
   if(!mods.length) addModulo();
-
   document.getElementById('cursoModal').classList.add('open');
 }
-
 function closeCursoModal(){
   document.getElementById('cursoModal').classList.remove('open');
   editingId = null;
 }
-
 function editCurso(id){ openCursoModal(id); }
 
 function addModulo(titulo='', desc='', modId=''){
@@ -944,8 +837,8 @@ function addModulo(titulo='', desc='', modId=''){
   div.dataset.id = modId || 'mod_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
   div.innerHTML = `
     <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
-      <input type="text" placeholder="Nome do módulo (ex: Introdução à Informática)" value="${titulo}" class="mod-titulo" style="background:transparent;border:none;outline:none;font-size:0.88rem;font-weight:600;color:var(--navy);font-family:inherit;"/>
-      <input type="text" placeholder="Descrição breve do módulo..." value="${desc}" class="mod-desc" style="background:transparent;border:none;outline:none;font-size:0.8rem;color:var(--muted);font-family:inherit;"/>
+      <input type="text" placeholder="Nome do módulo" value="${titulo}" class="mod-titulo" style="background:transparent;border:none;outline:none;font-size:0.88rem;font-weight:600;color:var(--navy);font-family:inherit;"/>
+      <input type="text" placeholder="Descrição breve..." value="${desc}" class="mod-desc" style="background:transparent;border:none;outline:none;font-size:0.8rem;color:var(--muted);font-family:inherit;"/>
     </div>
     <button class="module-remove" onclick="this.parentElement.remove()" title="Remover">✕</button>
   `;
@@ -957,12 +850,11 @@ async function salvarCurso(){
   const nome = document.getElementById('f-nome').value.trim();
   if(!nome){ showToast('Informe o nome do curso!','error'); return; }
 
-  const id = editingId || 'curso_'+Date.now();
-  const slug = nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+  const id   = editingId || 'curso_'+Date.now();
+  const slug = nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
 
-  // Collect modules
   const modItems = document.querySelectorAll('#modulesContainer .module-item');
-  const modulos = Array.from(modItems).map(item=>({
+  const modulos  = Array.from(modItems).map(item=>({
     id: item.dataset.id,
     titulo: item.querySelector('.mod-titulo').value.trim(),
     descricao: item.querySelector('.mod-desc').value.trim()
@@ -970,88 +862,61 @@ async function salvarCurso(){
 
   const curso = {
     id, slug, nome,
-    descricao: document.getElementById('f-desc').value.trim(),
-    paraQuem:  document.getElementById('f-paraQuem').value.trim(),
-    duracao:   document.getElementById('f-duracao').value.trim(),
-    mensalidade: document.getElementById('f-mensalidade').value,
-    valorTotal: document.getElementById('f-valorTotal').value,
-    materialVista: document.getElementById('f-materialVista').value,
-    materialTotal: document.getElementById('f-materialTotal').value,
+    descricao:         document.getElementById('f-desc').value.trim(),
+    paraQuem:          document.getElementById('f-paraQuem').value.trim(),
+    duracao:           document.getElementById('f-duracao').value.trim(),
+    mensalidade:       document.getElementById('f-mensalidade').value,
+    valorTotal:        document.getElementById('f-valorTotal').value,
+    materialTotal:     document.getElementById('f-materialTotal').value,
+    materialVista:     document.getElementById('f-materialVista').value,
     materialParcelado: document.getElementById('f-materialParcelado').value.trim(),
-    updatedAt: new Date().toISOString(),
+    updatedAt:         new Date().toISOString(),
     modulos
   };
 
-  // Save locally always
   const idx = cursosData.findIndex(c=>c.id===id);
   if(idx>=0) cursosData[idx] = curso; else cursosData.push(curso);
-  localStorage.setItem('decole_cursos', JSON.stringify(cursosData));
 
-  // Save to Sheets if configured
-  if(SHEETS_URL){
-    try{
-      await apiWrite('saveCurso', curso);
-      await apiWrite('saveModulos', { cursoId: id, modulos });
-      showToast('Curso salvo no Google Sheets! ✓','success');
-    } catch(e){
-      showToast('Salvo localmente. Erro ao sincronizar com Sheets.','error');
-    }
-  } else {
-    showToast('Curso salvo localmente! Configure o Sheets para sincronizar.','success');
+  const btnSave = document.querySelector('.modal-footer .btn-primary');
+  btnSave.textContent = '⏳ Salvando...';
+  btnSave.disabled = true;
+
+  try {
+    await saveToGitHub();
+    showToast('Curso salvo no GitHub! ✓','success');
+    closeCursoModal();
+    renderCursos();
+    renderDashboard();
+  } catch(e){
+    showToast('Erro: '+e.message,'error');
+  } finally {
+    btnSave.textContent = '💾 Salvar curso';
+    btnSave.disabled = false;
   }
-
-  closeCursoModal();
-  renderCursos();
-  renderDashboard();
 }
 
 // ══ DELETAR CURSO ══════════════════════════════════════════════
 async function deleteCurso(id){
-  if(!confirm('Tem certeza que deseja excluir este curso e todos os seus módulos?')) return;
+  if(!confirm('Excluir este curso e todos os seus módulos?')) return;
   cursosData = cursosData.filter(c=>c.id!==id);
-  localStorage.setItem('decole_cursos', JSON.stringify(cursosData));
-  if(SHEETS_URL){
-    try{ await apiWrite('deleteCurso',{id}); } catch(e){}
+  try {
+    await saveToGitHub();
+    showToast('Curso excluído.','success');
+  } catch(e){
+    showToast('Erro ao excluir: '+e.message,'error');
   }
-  showToast('Curso excluído.','success');
   renderCursos();
   renderDashboard();
 }
 
-// ══ CONFIG / SHEETS ════════════════════════════════════════════
-function saveConfig(){
-  const url = document.getElementById('sheetsUrlInput').value.trim();
-  if(!url){ showToast('Cole a URL do Apps Script!','error'); return; }
-  SHEETS_URL = url;
-  localStorage.setItem('decole_sheets_url',''+url);
-  document.getElementById('configFeedback').textContent = '✅ URL salva! Testando conexão...';
-  testConnection();
-}
-
-async function testConnection(){
-  const url = document.getElementById('sheetsUrlInput').value.trim();
-  if(!url){ showToast('Cole a URL primeiro!','error'); return; }
-  SHEETS_URL = url;
-  const fb = document.getElementById('configFeedback');
-  fb.textContent = '🔄 Testando...';
-  const data = await apiGet('getCursos');
-  if(data !== null){
-    fb.textContent = '✅ Conexão bem-sucedida! '+data.length+' curso(s) encontrado(s).';
-    setStatus('ok');
-    cursosData = data;
-    renderDashboard(); renderCursos();
-    showToast('Sheets conectado com sucesso!','success');
-  } else {
-    fb.textContent = '❌ Não foi possível conectar. Verifique a URL e as permissões.';
-    setStatus('error');
-    showToast('Erro ao conectar com o Sheets.','error');
-  }
-}
-
-// ══ COPY SCRIPT ══════════════════════════════════════════════
-function copyScript(){
-  const code = document.getElementById('appsScriptCode').textContent;
-  navigator.clipboard.writeText(code).then(()=> showToast('Código copiado!','success'));
+// ══ CONFIGURAR TOKEN ══════════════════════════════════════════
+function saveToken(){
+  const val = document.getElementById('ghTokenInput').value.trim();
+  if(!val){ showToast('Cole o token!','error'); return; }
+  GITHUB_TOKEN = val;
+  localStorage.setItem('decole_gh_token', val);
+  showToast('Token salvo!','success');
+  loadCursos();
 }
 
 // ══ TOAST ══════════════════════════════════════════════════════
@@ -1061,16 +926,12 @@ function showToast(msg, type=''){
   t.textContent = msg;
   t.className = 'show'+(type?' '+type:'');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>{ t.className=''; },3000);
+  toastTimer = setTimeout(()=>{ t.className=''; },3500);
 }
 
-// Close modal on overlay click
 document.getElementById('cursoModal').addEventListener('click', function(e){
   if(e.target === this) closeCursoModal();
 });
-
-// Pre-fill sheets URL if exists
-if(SHEETS_URL) document.getElementById('sheetsUrlInput').value = SHEETS_URL;
 </script>
 </body>
 </html>
