@@ -489,107 +489,95 @@ tr:hover td{background:#f8fafc;}
           <div class="step-item"><div class="step-num">5</div><div class="step-text">Copie a URL gerada e cole no campo abaixo</div></div>
         </div>
         <div class="code-block" id="appsScriptCode">// Cole este código no Google Apps Script
-const SHEET_ID = SpreadsheetApp.getActiveSpreadsheet().getId();
+// Após colar: Implantar > Gerenciar implantações > editar > Nova versão > Implantar
 
 function doGet(e) {
-  const action = e.parameter.action;
-  const sheet = SpreadsheetApp.getActiveSpreadsheet();
-  
-  if (action === 'getCursos') {
-    const data = sheet.getSheetByName('cursos').getDataRange().getValues();
-    const headers = data[0];
-    const rows = data.slice(1).map(r => {
-      const obj = {};
-      headers.forEach((h, i) => obj[h] = r[i]);
-      return obj;
-    });
-    return ContentService.createTextOutput(JSON.stringify({ok:true, data:rows}))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-  
-  if (action === 'getModulos') {
-    const data = sheet.getSheetByName('modulos').getDataRange().getValues();
-    const headers = data[0];
-    const rows = data.slice(1).map(r => {
-      const obj = {};
-      headers.forEach((h, i) => obj[h] = r[i]);
-      return obj;
-    });
-    return ContentService.createTextOutput(JSON.stringify({ok:true, data:rows}))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-  
-  return ContentService.createTextOutput(JSON.stringify({ok:false, error:'action not found'}))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-function doPost(e) {
-  const payload = JSON.parse(e.postData.contents);
-  const { action, data } = payload;
+  const action   = e.parameter.action;
+  const callback = e.parameter.callback; // JSONP support
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  
+
+  function out(obj) {
+    const json = JSON.stringify(obj);
+    const body = callback ? callback + '(' + json + ')' : json;
+    const mime = callback
+      ? ContentService.MimeType.JAVASCRIPT
+      : ContentService.MimeType.JSON;
+    return ContentService.createTextOutput(body).setMimeType(mime);
+  }
+
+  // ── LEITURA ──────────────────────────────────────
+  if (action === 'getCursos') {
+    const sheet = ss.getSheetByName('cursos');
+    if (!sheet || sheet.getLastRow() < 2) return out({ok:true, data:[]});
+    const [headers, ...rows] = sheet.getDataRange().getValues();
+    return out({ok:true, data: rows.map(r => {
+      const o = {}; headers.forEach((h,i) => o[h] = r[i]); return o;
+    })});
+  }
+
+  if (action === 'getModulos') {
+    const sheet = ss.getSheetByName('modulos');
+    if (!sheet || sheet.getLastRow() < 2) return out({ok:true, data:[]});
+    const [headers, ...rows] = sheet.getDataRange().getValues();
+    return out({ok:true, data: rows.map(r => {
+      const o = {}; headers.forEach((h,i) => o[h] = r[i]); return o;
+    })});
+  }
+
+  // ── ESCRITA via GET + payload ─────────────────────
+  const raw = e.parameter.payload;
+  if (!raw) return out({ok:false, error:'missing payload'});
+  const data = JSON.parse(decodeURIComponent(raw));
+
   if (action === 'saveCurso') {
     const sheet = ss.getSheetByName('cursos');
-    // Ensure headers
-    const headers = ['id','nome','descricao','paraQuem','duracao','mensalidade','valorTotal','materialTotal','materialVista','materialParcelado','slug','updatedAt'];
-    if (sheet.getLastRow() === 0) sheet.appendRow(headers);
-    
-    // Check if updating existing
+    const HEADERS = ['id','nome','descricao','paraQuem','duracao','mensalidade',
+                     'valorTotal','materialTotal','materialVista','materialParcelado',
+                     'slug','updatedAt'];
+    if (sheet.getLastRow() === 0) sheet.appendRow(HEADERS);
     const allData = sheet.getDataRange().getValues();
-    const ids = allData.map(r => r[0]);
-    const rowIndex = ids.indexOf(data.id);
-    
-    const row = headers.map(h => data[h] || '');
+    const ids = allData.map(r => String(r[0]));
+    const rowIndex = ids.indexOf(String(data.id));
+    const row = HEADERS.map(h => data[h] !== undefined ? data[h] : '');
     if (rowIndex > 0) {
       sheet.getRange(rowIndex + 1, 1, 1, row.length).setValues([row]);
     } else {
       sheet.appendRow(row);
     }
-    
-    return ContentService.createTextOutput(JSON.stringify({ok:true}))
-      .setMimeType(ContentService.MimeType.JSON);
+    return out({ok:true});
   }
-  
-  if (action === 'deleteCurso') {
-    const sheet = ss.getSheetByName('cursos');
-    const allData = sheet.getDataRange().getValues();
-    const ids = allData.map(r => r[0]);
-    const rowIndex = ids.indexOf(data.id);
-    if (rowIndex > 0) sheet.deleteRow(rowIndex + 1);
-    
-    // Also delete related modules
-    const modSheet = ss.getSheetByName('modulos');
-    const modData = modSheet.getDataRange().getValues();
-    for (let i = modData.length - 1; i >= 1; i--) {
-      if (modData[i][1] === data.id) modSheet.deleteRow(i + 1);
-    }
-    
-    return ContentService.createTextOutput(JSON.stringify({ok:true}))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-  
+
   if (action === 'saveModulos') {
     const sheet = ss.getSheetByName('modulos');
-    const headers = ['id','cursoId','titulo','descricao','ordem'];
-    if (sheet.getLastRow() === 0) sheet.appendRow(headers);
-    
-    // Delete existing modules for this course
+    const HEADERS = ['id','cursoId','titulo','descricao','ordem'];
+    if (sheet.getLastRow() === 0) sheet.appendRow(HEADERS);
     const allData = sheet.getDataRange().getValues();
     for (let i = allData.length - 1; i >= 1; i--) {
-      if (allData[i][1] === data.cursoId) sheet.deleteRow(i + 1);
+      if (String(allData[i][1]) === String(data.cursoId)) sheet.deleteRow(i + 1);
     }
-    
-    // Re-insert
     data.modulos.forEach((mod, i) => {
       sheet.appendRow([mod.id, data.cursoId, mod.titulo, mod.descricao || '', i + 1]);
     });
-    
-    return ContentService.createTextOutput(JSON.stringify({ok:true}))
-      .setMimeType(ContentService.MimeType.JSON);
+    return out({ok:true});
   }
-  
-  return ContentService.createTextOutput(JSON.stringify({ok:false}))
-    .setMimeType(ContentService.MimeType.JSON);
+
+  if (action === 'deleteCurso') {
+    const sheet = ss.getSheetByName('cursos');
+    const allData = sheet.getDataRange().getValues();
+    const ids = allData.map(r => String(r[0]));
+    const rowIndex = ids.indexOf(String(data.id));
+    if (rowIndex > 0) sheet.deleteRow(rowIndex + 1);
+    const modSheet = ss.getSheetByName('modulos');
+    if (modSheet && modSheet.getLastRow() > 1) {
+      const modData = modSheet.getDataRange().getValues();
+      for (let i = modData.length - 1; i >= 1; i--) {
+        if (String(modData[i][1]) === String(data.id)) modSheet.deleteRow(i + 1);
+      }
+    }
+    return out({ok:true});
+  }
+
+  return out({ok:false, error:'action not found'});
 }</div>
         <button class="btn btn-secondary btn-sm" onclick="copyScript()">📋 Copiar código</button>
       </div>
@@ -764,23 +752,52 @@ function init(){
 }
 
 // ══ API CALLS ══════════════════════════════════════════════════
-async function apiGet(action){
-  if(!SHEETS_URL) return null;
-  try{
-    const res = await fetch(`${SHEETS_URL}?action=${action}`);
-    const json = await res.json();
-    return json.ok ? json.data : null;
-  } catch(e){ return null; }
+// JSONP — unica forma de contornar CORS com Google Apps Script
+function jsonp(url) {
+  return new Promise((resolve, reject) => {
+    const cbName = 'decole_cb_' + Date.now() + '_' + Math.floor(Math.random()*9999);
+    const script = document.createElement('script');
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error('JSONP timeout'));
+    }, 12000);
+    function cleanup() {
+      delete window[cbName];
+      if (script.parentNode) script.parentNode.removeChild(script);
+      clearTimeout(timer);
+    }
+    window[cbName] = function(data) {
+      cleanup();
+      resolve(data);
+    };
+    script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
+    script.onerror = () => { cleanup(); reject(new Error('JSONP load error')); };
+    document.head.appendChild(script);
+  });
 }
 
-async function apiPost(action, data){
-  if(!SHEETS_URL) throw new Error('URL não configurada');
-  const res = await fetch(SHEETS_URL, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({action, data})
-  });
-  return await res.json();
+async function apiGet(action) {
+  if (!SHEETS_URL) return null;
+  try {
+    const data = await jsonp(SHEETS_URL + '?action=' + action);
+    return data.ok ? data.data : null;
+  } catch(e) {
+    console.warn('apiGet error:', e);
+    return null;
+  }
+}
+
+async function apiWrite(action, data) {
+  if (!SHEETS_URL) throw new Error('URL nao configurada');
+  const payload = encodeURIComponent(JSON.stringify(data));
+  const url = SHEETS_URL + '?action=' + action + '&payload=' + payload;
+  try {
+    const result = await jsonp(url);
+    return result;
+  } catch(e) {
+    console.warn('apiWrite error:', e);
+    throw e;
+  }
 }
 
 // ══ LOAD CURSOS ══════════════════════════════════════════════
@@ -970,8 +987,8 @@ async function salvarCurso(){
   // Save to Sheets if configured
   if(SHEETS_URL){
     try{
-      await apiPost('saveCurso', curso);
-      await apiPost('saveModulos', { cursoId: id, modulos });
+      await apiWrite('saveCurso', curso);
+      await apiWrite('saveModulos', { cursoId: id, modulos });
       showToast('Curso salvo no Google Sheets! ✓','success');
     } catch(e){
       showToast('Salvo localmente. Erro ao sincronizar com Sheets.','error');
@@ -991,7 +1008,7 @@ async function deleteCurso(id){
   cursosData = cursosData.filter(c=>c.id!==id);
   localStorage.setItem('decole_cursos', JSON.stringify(cursosData));
   if(SHEETS_URL){
-    try{ await apiPost('deleteCurso',{id}); } catch(e){}
+    try{ await apiWrite('deleteCurso',{id}); } catch(e){}
   }
   showToast('Curso excluído.','success');
   renderCursos();
