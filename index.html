@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Decole · Painel Interno</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0b1f3a;
+  --navy2:#0d2847;
+  --blue:#1a3a5c;
+  --red:#e53935;
+  --red2:#ff4d4a;
+  --green:#16a34a;
+  --amber:#d97706;
+  --white:#ffffff;
+  --bg:#f0f4f8;
+  --surface:#ffffff;
+  --border:#e2e8f0;
+  --text:#1e293b;
+  --muted:#64748b;
+  --radius:12px;
+  --shadow:0 1px 3px rgba(0,0,0,0.08),0 4px 16px rgba(0,0,0,0.06);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+img{max-width:100%;}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+
+/* ── LOGIN ── */
+#loginScreen{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);
+  padding:20px;
+}
+.login-card{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:20px;
+  padding:44px 40px;
+  width:100%;max-width:400px;
+  text-align:center;
+  backdrop-filter:blur(20px);
+}
+.login-logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:28px;}
+.login-logo .mark{
+  width:44px;height:44px;background:var(--red);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.4rem;font-weight:900;color:white;
+}
+.login-logo .brand-name{font-size:1.6rem;font-weight:800;color:white;letter-spacing:0.04em;}
+.login-logo .brand-sub{font-size:0.6rem;font-weight:700;letter-spacing:0.15em;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-top:2px;}
+.login-title{font-size:1rem;font-weight:600;color:rgba(255,255,255,0.6);margin-bottom:28px;}
+.login-field{position:relative;margin-bottom:14px;}
+.login-field input{
+  width:100%;padding:13px 16px;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:10px;color:white;font-size:0.95rem;outline:none;
+  transition:border-color .2s;
+}
+.login-field input::placeholder{color:rgba(255,255,255,0.3);}
+.login-field input:focus{border-color:rgba(229,57,53,0.6);}
+.login-btn{
+  width:100%;padding:14px;background:var(--red);border:none;border-radius:10px;
+  color:white;font-size:0.95rem;font-weight:700;margin-top:6px;
+  transition:background .2s,transform .15s;
+}
+.login-btn:hover{background:#c62828;}
+.login-error{color:#ff6b6b;font-size:0.82rem;margin-top:8px;display:none;}
+
+/* ── APP SHELL ── */
+#app{display:none;}
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:240px;
+  background:var(--navy);color:white;
+  display:flex;flex-direction:column;
+  z-index:100;
+  transition:transform .3s;
+}
+.sidebar-brand{
+  padding:22px 20px 18px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;gap:10px;
+}
+.sidebar-brand .mark{
+  width:36px;height:36px;background:var(--red);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;font-weight:900;color:white;flex-shrink:0;
+}
+.sidebar-brand .name{font-size:1.1rem;font-weight:800;letter-spacing:0.04em;}
+.sidebar-brand .sub{font-size:0.58rem;letter-spacing:0.12em;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-top:1px;}
+.sidebar-nav{flex:1;padding:14px 10px;display:flex;flex-direction:column;gap:4px;}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:8px;
+  font-size:0.9rem;font-weight:600;color:rgba(255,255,255,0.6);
+  cursor:pointer;transition:all .18s;border:none;background:transparent;width:100%;
+}
+.nav-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.9);}
+.nav-item.active{background:rgba(229,57,53,0.18);color:white;}
+.nav-item .icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0;}
+.sidebar-footer{padding:14px 10px;border-top:1px solid rgba(255,255,255,0.08);}
+.logout-btn{
+  width:100%;padding:9px 12px;background:transparent;
+  border:1px solid rgba(255,255,255,0.12);border-radius:8px;
+  color:rgba(255,255,255,0.5);font-size:0.85rem;font-weight:600;
+  display:flex;align-items:center;gap:8px;transition:all .18s;
+}
+.logout-btn:hover{border-color:rgba(229,57,53,0.4);color:#ff6b6b;}
+
+/* ── MAIN CONTENT ── */
+.main{margin-left:240px;min-height:100vh;padding:28px 30px;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+.topbar h1{font-size:1.4rem;font-weight:800;color:var(--navy);}
+.topbar p{font-size:0.85rem;color:var(--muted);margin-top:2px;}
+.sheets-status{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:8px;padding:8px 14px;font-size:0.8rem;font-weight:600;
+}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#94a3b8;}
+.status-dot.ok{background:var(--green);}
+.status-dot.err{background:var(--red);}
+
+/* ── PANELS ── */
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* ── CARDS / STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;
+}
+.stat-label{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);}
+.stat-value{font-size:2rem;font-weight:800;color:var(--navy);margin-top:6px;line-height:1;}
+.stat-sub{font-size:0.78rem;color:var(--muted);margin-top:4px;}
+
+/* ── SECTION HEADER ── */
+.section-hd{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px;
+}
+.section-hd h2{font-size:1.05rem;font-weight:700;color:var(--navy);}
+
+/* ── BTN ── */
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:9px 18px;border-radius:8px;font-size:0.85rem;font-weight:700;
+  border:1px solid transparent;transition:all .18s;cursor:pointer;
+}
+.btn-primary{background:var(--red);color:white;border-color:var(--red);}
+.btn-primary:hover{background:#c62828;border-color:#c62828;}
+.btn-secondary{background:white;color:var(--text);border-color:var(--border);}
+.btn-secondary:hover{border-color:#94a3b8;}
+.btn-danger{background:white;color:var(--red);border-color:#fecaca;}
+.btn-danger:hover{background:#fff1f1;}
+.btn-sm{padding:6px 12px;font-size:0.78rem;}
+.btn-icon{padding:7px;border-radius:7px;}
+
+/* ── TABLE ── */
+.table-wrap{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+}
+table{width:100%;border-collapse:collapse;}
+thead{background:#f8fafc;}
+th{padding:11px 16px;text-align:left;font-size:0.75rem;font-weight:700;
+   text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);
+   border-bottom:1px solid var(--border);}
+td{padding:13px 16px;font-size:0.87rem;border-bottom:1px solid #f1f5f9;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:#f8fafc;}
+.td-title{font-weight:600;color:var(--navy);}
+.td-muted{color:var(--muted);}
+.badge{
+  display:inline-flex;padding:3px 10px;border-radius:999px;
+  font-size:0.72rem;font-weight:700;
+}
+.badge-blue{background:#dbeafe;color:#1e40af;}
+.badge-purple{background:#ede9fe;color:#5b21b6;}
+.badge-orange{background:#ffedd5;color:#9a3412;}
+.badge-green{background:#dcfce7;color:#166534;}
+.actions{display:flex;gap:6px;}
+
+/* ── MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.45);
+  display:none;align-items:center;justify-content:center;
+  z-index:200;padding:20px;
+}
+.modal-overlay.open{display:flex;}
+.modal{
+  background:white;border-radius:16px;width:100%;max-width:620px;
+  max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);
+}
+.modal-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:22px 26px 18px;border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:white;z-index:1;
+}
+.modal-header h3{font-size:1.05rem;font-weight:700;}
+.modal-close{
+  width:32px;height:32px;border-radius:8px;border:1px solid var(--border);
+  background:white;display:flex;align-items:center;justify-content:center;
+  font-size:1rem;color:var(--muted);cursor:pointer;transition:all .18s;
+}
+.modal-close:hover{background:#f1f5f9;}
+.modal-body{padding:22px 26px;}
+.modal-footer{
+  padding:16px 26px;border-top:1px solid var(--border);
+  display:flex;justify-content:flex-end;gap:10px;
+  position:sticky;bottom:0;background:white;
+}
+
+/* ── FORM ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-grid.full{grid-template-columns:1fr;}
+.field-group{display:flex;flex-direction:column;gap:5px;}
+.field-group.span2{grid-column:span 2;}
+.field-group label{font-size:0.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
+.field-group input,
+.field-group select,
+.field-group textarea{
+  padding:10px 13px;border:1px solid var(--border);border-radius:8px;
+  font-size:0.9rem;outline:none;transition:border-color .18s,box-shadow .18s;
+  background:white;color:var(--text);
+}
+.field-group input:focus,
+.field-group select:focus,
+.field-group textarea:focus{
+  border-color:#94a3b8;
+  box-shadow:0 0 0 3px rgba(100,116,139,0.1);
+}
+.field-group textarea{resize:vertical;min-height:80px;line-height:1.6;}
+.field-hint{font-size:0.72rem;color:var(--muted);}
+.currency-wrap{position:relative;}
+.currency-wrap span{
+  position:absolute;left:12px;top:50%;transform:translateY(-50%);
+  font-size:0.85rem;font-weight:600;color:var(--muted);
+}
+.currency-wrap input{padding-left:30px;}
+
+/* ── MODULES SECTION inside course form ── */
+.modules-section{margin-top:20px;}
+.modules-section h4{font-size:0.85rem;font-weight:700;color:var(--navy);margin-bottom:10px;}
+.module-item{
+  background:#f8fafc;border:1px solid var(--border);border-radius:8px;
+  padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;
+}
+.module-item input{
+  flex:1;border:none;background:transparent;font-size:0.88rem;
+  color:var(--text);outline:none;font-family:inherit;
+}
+.module-remove{
+  width:26px;height:26px;border-radius:6px;border:1px solid #fecaca;
+  background:white;color:var(--red);font-size:0.9rem;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
+}
+.add-module-btn{
+  width:100%;padding:9px;border:1px dashed var(--border);border-radius:8px;
+  background:transparent;color:var(--muted);font-size:0.82rem;font-weight:600;
+  cursor:pointer;transition:all .18s;
+}
+.add-module-btn:hover{border-color:#94a3b8;color:var(--text);background:#f8fafc;}
+
+/* ── EMPTY STATE ── */
+.empty-state{
+  text-align:center;padding:60px 20px;
+  color:var(--muted);
+}
+.empty-state .icon{font-size:2.5rem;margin-bottom:12px;opacity:0.5;}
+.empty-state p{font-size:0.9rem;}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--navy);color:white;
+  padding:12px 20px;border-radius:10px;font-size:0.85rem;font-weight:600;
+  box-shadow:var(--shadow-lg);z-index:999;
+  transform:translateY(20px);opacity:0;transition:all .3s;
+  display:flex;align-items:center;gap:8px;
+}
+#toast.show{transform:translateY(0);opacity:1;}
+#toast.success{background:var(--green);}
+#toast.error{background:var(--red);}
+
+/* ── SHEETS CONFIG ── */
+.config-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:24px;margin-bottom:20px;
+  box-shadow:var(--shadow);
+}
+.config-card h3{font-size:0.95rem;font-weight:700;margin-bottom:4px;}
+.config-card p{font-size:0.83rem;color:var(--muted);margin-bottom:16px;line-height:1.6;}
+.code-block{
+  background:#0f172a;color:#7dd3fc;
+  border-radius:8px;padding:14px 16px;
+  font-family:monospace;font-size:0.8rem;line-height:1.7;
+  white-space:pre-wrap;margin-bottom:14px;overflow-x:auto;
+}
+.step-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.step-item{display:flex;gap:12px;align-items:flex-start;}
+.step-num{
+  width:24px;height:24px;border-radius:50%;background:var(--red);
+  color:white;font-size:0.72rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+}
+.step-text{font-size:0.85rem;line-height:1.6;color:var(--text);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;padding:20px 16px;}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .form-grid{grid-template-columns:1fr;}
+  .field-group.span2{grid-column:span 1;}
+  .hamburger{display:flex!important;}
+}
+.hamburger{
+  display:none;align-items:center;justify-content:center;
+  width:38px;height:38px;background:var(--navy);border-radius:8px;
+  border:none;cursor:pointer;color:white;font-size:1.1rem;margin-right:12px;
+}
+.overlay-bg{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:99;
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══════════════════════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="mark">D</div>
+      <div>
+        <div class="brand-name">DECOLE</div>
+        <div class="brand-sub">Painel Interno</div>
+      </div>
+    </div>
+    <p class="login-title">Acesso restrito à equipe</p>
+    <div class="login-field">
+      <input type="password" id="loginInput" placeholder="Digite a senha" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+    <p class="login-error" id="loginError">Senha incorreta. Tente novamente.</p>
+  </div>
+</div>
+
+<!-- ══ APP ══════════════════════════════════════════════════════ -->
+<div id="app">
+  <div class="overlay-bg" id="overlayBg" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <div class="mark">D</div>
+      <div>
+        <div class="name">DECOLE</div>
+        <div class="sub">Painel Interno</div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="showPanel('dashboard')" id="nav-dashboard">
+        <span class="icon">📊</span> Dashboard
+      </button>
+      <button class="nav-item" onclick="showPanel('cursos')" id="nav-cursos">
+        <span class="icon">📚</span> Cursos
+      </button>
+      <button class="nav-item" onclick="showPanel('configurar')" id="nav-configurar">
+        <span class="icon">⚙️</span> Configurar Sheets
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="doLogout()">
+        <span>🚪</span> Sair
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;gap:0">
+        <button class="hamburger" id="hamburger" onclick="toggleSidebar()">☰</button>
+        <div>
+          <h1 id="pageTitle">Dashboard</h1>
+          <p id="pageSubtitle">Bem-vinda ao painel da Decole</p>
+        </div>
+      </div>
+      <div class="sheets-status">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Verificando Sheets...</span>
+      </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total de Cursos</div>
+          <div class="stat-value" id="statCursos">—</div>
+          <div class="stat-sub">cadastrados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total de Módulos</div>
+          <div class="stat-value" id="statModulos">—</div>
+          <div class="stat-sub">em todos os cursos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Menor Mensalidade</div>
+          <div class="stat-value" id="statMensal">—</div>
+          <div class="stat-sub">entre os cursos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Última atualização</div>
+          <div class="stat-value" style="font-size:1rem;margin-top:10px;" id="statUpdate">—</div>
+          <div class="stat-sub">no Google Sheets</div>
+        </div>
+      </div>
+
+      <div class="section-hd">
+        <h2>Cursos cadastrados</h2>
+        <button class="btn btn-primary btn-sm" onclick="showPanel('cursos')">Ver todos →</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Curso</th>
+              <th>Módulos</th>
+              <th>Mensalidade</th>
+              <th>Valor Total</th>
+            </tr>
+          </thead>
+          <tbody id="dashCursosTable">
+            <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:30px;">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CURSOS -->
+    <div class="panel" id="panel-cursos">
+      <div class="section-hd">
+        <h2>Todos os cursos</h2>
+        <button class="btn btn-primary" onclick="openCursoModal()">+ Novo curso</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Curso</th>
+              <th>Para quem é</th>
+              <th>Duração</th>
+              <th>Mensalidade</th>
+              <th>Total</th>
+              <th>Material</th>
+              <th>Módulos</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="cursosTable">
+            <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px;">Carregando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONFIGURAR -->
+    <div class="panel" id="panel-configurar">
+      <div class="config-card">
+        <h3>🔗 Conectar ao Google Sheets</h3>
+        <p>Para o painel funcionar, você precisa criar uma planilha no Google Sheets e publicar um Apps Script como API. Siga os passos:</p>
+        <div class="step-list">
+          <div class="step-item"><div class="step-num">1</div><div class="step-text">Acesse <strong>sheets.google.com</strong> e crie uma nova planilha chamada <strong>Decole - Dados</strong></div></div>
+          <div class="step-item"><div class="step-num">2</div><div class="step-text">Crie uma aba chamada <strong>cursos</strong> e outra chamada <strong>modulos</strong></div></div>
+          <div class="step-item"><div class="step-num">3</div><div class="step-text">No menu, vá em <strong>Extensões → Apps Script</strong> e cole o código abaixo</div></div>
+          <div class="step-item"><div class="step-num">4</div><div class="step-text">Clique em <strong>Implantar → Nova implantação → App da Web</strong> — acesso para <strong>Qualquer pessoa</strong></div></div>
+          <div class="step-item"><div class="step-num">5</div><div class="step-text">Copie a URL gerada e cole no campo abaixo</div></div>
+        </div>
+        <div class="code-block" id="appsScriptCode">// Cole este código no Google Apps Script
+const SHEET_ID = SpreadsheetApp.getActiveSpreadsheet().getId();
+
+function doGet(e) {
+  const action = e.parameter.action;
+  const sheet = SpreadsheetApp.getActiveSpreadsheet();
+  
+  if (action === 'getCursos') {
+    const data = sheet.getSheetByName('cursos').getDataRange().getValues();
+    const headers = data[0];
+    const rows = data.slice(1).map(r => {
+      const obj = {};
+      headers.forEach((h, i) => obj[h] = r[i]);
+      return obj;
+    });
+    return ContentService.createTextOutput(JSON.stringify({ok:true, data:rows}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  if (action === 'getModulos') {
+    const data = sheet.getSheetByName('modulos').getDataRange().getValues();
+    const headers = data[0];
+    const rows = data.slice(1).map(r => {
+      const obj = {};
+      headers.forEach((h, i) => obj[h] = r[i]);
+      return obj;
+    });
+    return ContentService.createTextOutput(JSON.stringify({ok:true, data:rows}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({ok:false, error:'action not found'}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  const payload = JSON.parse(e.postData.contents);
+  const { action, data } = payload;
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  
+  if (action === 'saveCurso') {
+    const sheet = ss.getSheetByName('cursos');
+    // Ensure headers
+    const headers = ['id','nome','descricao','paraQuem','duracao','mensalidade','valorTotal','materialTotal','materialVista','materialParcelado','slug','updatedAt'];
+    if (sheet.getLastRow() === 0) sheet.appendRow(headers);
+    
+    // Check if updating existing
+    const allData = sheet.getDataRange().getValues();
+    const ids = allData.map(r => r[0]);
+    const rowIndex = ids.indexOf(data.id);
+    
+    const row = headers.map(h => data[h] || '');
+    if (rowIndex > 0) {
+      sheet.getRange(rowIndex + 1, 1, 1, row.length).setValues([row]);
+    } else {
+      sheet.appendRow(row);
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({ok:true}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  if (action === 'deleteCurso') {
+    const sheet = ss.getSheetByName('cursos');
+    const allData = sheet.getDataRange().getValues();
+    const ids = allData.map(r => r[0]);
+    const rowIndex = ids.indexOf(data.id);
+    if (rowIndex > 0) sheet.deleteRow(rowIndex + 1);
+    
+    // Also delete related modules
+    const modSheet = ss.getSheetByName('modulos');
+    const modData = modSheet.getDataRange().getValues();
+    for (let i = modData.length - 1; i >= 1; i--) {
+      if (modData[i][1] === data.id) modSheet.deleteRow(i + 1);
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify({ok:true}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  if (action === 'saveModulos') {
+    const sheet = ss.getSheetByName('modulos');
+    const headers = ['id','cursoId','titulo','descricao','ordem'];
+    if (sheet.getLastRow() === 0) sheet.appendRow(headers);
+    
+    // Delete existing modules for this course
+    const allData = sheet.getDataRange().getValues();
+    for (let i = allData.length - 1; i >= 1; i--) {
+      if (allData[i][1] === data.cursoId) sheet.deleteRow(i + 1);
+    }
+    
+    // Re-insert
+    data.modulos.forEach((mod, i) => {
+      sheet.appendRow([mod.id, data.cursoId, mod.titulo, mod.descricao || '', i + 1]);
+    });
+    
+    return ContentService.createTextOutput(JSON.stringify({ok:true}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({ok:false}))
+    .setMimeType(ContentService.MimeType.JSON);
+}</div>
+        <button class="btn btn-secondary btn-sm" onclick="copyScript()">📋 Copiar código</button>
+      </div>
+
+      <div class="config-card">
+        <h3>🔑 URL da sua API</h3>
+        <p>Cole aqui a URL gerada após implantar o Apps Script como App da Web.</p>
+        <div class="field-group" style="margin-bottom:12px;">
+          <label>URL do Apps Script</label>
+          <input type="url" id="sheetsUrlInput" placeholder="https://script.google.com/macros/s/XXXXXX/exec"/>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-primary" onclick="saveConfig()">💾 Salvar e testar</button>
+          <button class="btn btn-secondary" onclick="testConnection()">🔄 Testar conexão</button>
+        </div>
+        <p class="field-hint" style="margin-top:10px;" id="configFeedback"></p>
+      </div>
+
+      <div class="config-card">
+        <h3>📋 Cabeçalhos das abas</h3>
+        <p>Na aba <strong>cursos</strong>, a primeira linha deve ter exatamente estes cabeçalhos (já inseridos automaticamente pelo script):</p>
+        <div class="code-block">id | nome | descricao | paraQuem | duracao | mensalidade | valorTotal | materialTotal | materialVista | materialParcelado | slug | updatedAt</div>
+        <p style="font-size:0.83rem;color:var(--muted);">Na aba <strong>modulos</strong>:</p>
+        <div class="code-block">id | cursoId | titulo | descricao | ordem</div>
+      </div>
+    </div>
+
+  </main><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══ MODAL CURSO ══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="cursoModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Novo Curso</h3>
+      <button class="modal-close" onclick="closeCursoModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field-group span2">
+          <label>Nome do curso *</label>
+          <input type="text" id="f-nome" placeholder="Ex: Operador de Computador"/>
+        </div>
+        <div class="field-group span2">
+          <label>Descrição</label>
+          <textarea id="f-desc" placeholder="Descreva o curso em 2-3 linhas..."></textarea>
+        </div>
+        <div class="field-group span2">
+          <label>Para quem é</label>
+          <input type="text" id="f-paraQuem" placeholder="Ex: Quem quer aprender informática do zero"/>
+        </div>
+        <div class="field-group">
+          <label>Duração média</label>
+          <input type="text" id="f-duracao" placeholder="Ex: 6 meses"/>
+        </div>
+        <div class="field-group">
+          <label>Mensalidade (R$)</label>
+          <div class="currency-wrap">
+            <span>R$</span>
+            <input type="number" id="f-mensalidade" placeholder="0,00" step="0.01" min="0"/>
+          </div>
+        </div>
+        <div class="field-group">
+          <label>Valor total do curso (R$)</label>
+          <div class="currency-wrap">
+            <span>R$</span>
+            <input type="number" id="f-valorTotal" placeholder="0,00" step="0.01" min="0"/>
+          </div>
+        </div>
+        <!-- MATERIAL -->
+        <div class="field-group span2" style="background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:16px;grid-column:span 2;">
+          <label style="margin-bottom:12px;display:block;">📦 Material didático</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+            <div class="field-group">
+              <label>Total do material (R$)</label>
+              <div class="currency-wrap">
+                <span>R$</span>
+                <input type="number" id="f-materialTotal" placeholder="0,00" step="0.01" min="0"/>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>À vista (R$)</label>
+              <div class="currency-wrap">
+                <span>R$</span>
+                <input type="number" id="f-materialVista" placeholder="0,00" step="0.01" min="0"/>
+              </div>
+            </div>
+            <div class="field-group">
+              <label>Parcelado em</label>
+              <input type="text" id="f-materialParcelado" placeholder="Ex: 3x de R$ 30,00"/>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MÓDULOS -->
+      <div class="modules-section">
+        <h4>📦 Módulos do curso</h4>
+        <div id="modulesContainer"></div>
+        <button class="add-module-btn" onclick="addModulo()">+ Adicionar módulo</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeCursoModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarCurso()">💾 Salvar curso</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ══ CONFIG ══════════════════════════════════════════════════════
+const SENHA = 'decole2025';
+let SHEETS_URL = localStorage.getItem('decole_sheets_url') || '';
+let cursosData = [];
+let editingId = null;
+
+// ══ LOGIN ══════════════════════════════════════════════════════
+function doLogin(){
+  const val = document.getElementById('loginInput').value;
+  const err = document.getElementById('loginError');
+  if(val === SENHA){
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    init();
+  } else {
+    err.style.display = 'block';
+    document.getElementById('loginInput').value = '';
+  }
+}
+function doLogout(){
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('loginInput').value = '';
+}
+
+// ══ SIDEBAR ══════════════════════════════════════════════════
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlayBg').style.display = 
+    document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none';
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlayBg').style.display = 'none';
+}
+
+// ══ PANELS ══════════════════════════════════════════════════
+const PANELS = {
+  dashboard: { title:'Dashboard', sub:'Visão geral dos cursos da Decole' },
+  cursos:    { title:'Cursos', sub:'Adicione, edite e remova cursos' },
+  configurar:{ title:'Configurações', sub:'Conecte o painel ao Google Sheets' }
+};
+function showPanel(id){
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  document.getElementById('nav-'+id).classList.add('active');
+  document.getElementById('pageTitle').textContent = PANELS[id].title;
+  document.getElementById('pageSubtitle').textContent = PANELS[id].sub;
+  closeSidebar();
+  if(id === 'cursos') renderCursos();
+  if(id === 'dashboard') renderDashboard();
+}
+
+// ══ INIT ══════════════════════════════════════════════════════
+function init(){
+  if(SHEETS_URL) document.getElementById('sheetsUrlInput').value = SHEETS_URL;
+  loadCursos();
+}
+
+// ══ API CALLS ══════════════════════════════════════════════════
+async function apiGet(action){
+  if(!SHEETS_URL) return null;
+  try{
+    const res = await fetch(`${SHEETS_URL}?action=${action}`);
+    const json = await res.json();
+    return json.ok ? json.data : null;
+  } catch(e){ return null; }
+}
+
+async function apiPost(action, data){
+  if(!SHEETS_URL) throw new Error('URL não configurada');
+  const res = await fetch(SHEETS_URL, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({action, data})
+  });
+  return await res.json();
+}
+
+// ══ LOAD CURSOS ══════════════════════════════════════════════
+async function loadCursos(){
+  setStatus('loading');
+  const [cursos, modulos] = await Promise.all([
+    apiGet('getCursos'),
+    apiGet('getModulos')
+  ]);
+  if(cursos === null && !SHEETS_URL){
+    setStatus('none');
+    cursosData = getSampleData();
+  } else if(cursos === null){
+    setStatus('error');
+    cursosData = getSampleData();
+  } else {
+    setStatus('ok');
+    // Attach modules to courses
+    cursosData = cursos.map(c => ({
+      ...c,
+      modulos: (modulos || []).filter(m => m.cursoId === c.id)
+    }));
+  }
+  renderDashboard();
+  renderCursos();
+}
+
+function getSampleData(){
+  return JSON.parse(localStorage.getItem('decole_cursos') || '[]');
+}
+
+// ══ STATUS ══════════════════════════════════════════════════
+function setStatus(state){
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  dot.className = 'status-dot';
+  if(state === 'ok'){ dot.classList.add('ok'); txt.textContent = 'Sheets conectado'; }
+  else if(state === 'error'){ dot.classList.add('err'); txt.textContent = 'Erro na conexão'; }
+  else if(state === 'none'){ txt.textContent = 'Sheets não configurado'; }
+  else { txt.textContent = 'Verificando...'; }
+}
+
+// ══ RENDER DASHBOARD ══════════════════════════════════════════
+function renderDashboard(){
+  const totalModulos = cursosData.reduce((s,c)=> s + (c.modulos||[]).length, 0);
+  const mensals = cursosData.map(c => parseFloat(c.mensalidade)||0).filter(v=>v>0);
+  document.getElementById('statCursos').textContent = cursosData.length;
+  document.getElementById('statModulos').textContent = totalModulos;
+  document.getElementById('statMensal').textContent = mensals.length ? 'R$ '+Math.min(...mensals).toFixed(2).replace('.',',') : '—';
+  document.getElementById('statUpdate').textContent = new Date().toLocaleDateString('pt-BR');
+
+  const tbody = document.getElementById('dashCursosTable');
+  if(!cursosData.length){
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:30px;">Nenhum curso cadastrado ainda.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = cursosData.slice(0,5).map(c=>`
+    <tr>
+      <td class="td-title">${c.nome||'—'}</td>
+      <td class="td-muted">${(c.modulos||[]).length} módulos</td>
+      <td>${c.mensalidade ? 'R$ '+parseFloat(c.mensalidade).toFixed(2).replace('.',',') : '—'}</td>
+      <td>${c.valorTotal ? 'R$ '+parseFloat(c.valorTotal).toFixed(2).replace('.',',') : '—'}</td>
+    </tr>
+  `).join('');
+}
+
+// ══ RENDER CURSOS TABLE ════════════════════════════════════════
+function renderCursos(){
+  const tbody = document.getElementById('cursosTable');
+  if(!cursosData.length){
+    tbody.innerHTML = `<tr><td colspan="8">
+      <div class="empty-state">
+        <div class="icon">📚</div>
+        <p>Nenhum curso cadastrado. Clique em <strong>+ Novo curso</strong> para começar.</p>
+      </div>
+    </td></tr>`;
+    return;
+  }
+  tbody.innerHTML = cursosData.map(c=>`
+    <tr>
+      <td class="td-title">${c.nome||'—'}</td>
+      <td class="td-muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.paraQuem||'—'}</td>
+      <td class="td-muted">${c.duracao||'—'}</td>
+      <td>${c.mensalidade ? 'R$ '+parseFloat(c.mensalidade).toFixed(2).replace('.',',') : '—'}</td>
+      <td>${c.valorTotal ? 'R$ '+parseFloat(c.valorTotal).toFixed(2).replace('.',',') : '—'}</td>
+      <td class="td-muted" style="font-size:0.8rem;line-height:1.6;">
+        ${c.materialTotal ? '<div>Total: R$ '+parseFloat(c.materialTotal).toFixed(2).replace('.',',')+'</div>' : ''}
+        ${c.materialVista ? '<div>À vista: R$ '+parseFloat(c.materialVista).toFixed(2).replace('.',',')+'</div>' : ''}
+        ${c.materialParcelado ? '<div>Parcelas: '+c.materialParcelado+'</div>' : ''}
+        ${!c.materialTotal && !c.materialVista && !c.materialParcelado ? '—' : ''}
+      </td>
+      <td><span class="badge badge-blue">${(c.modulos||[]).length} módulos</span></td>
+      <td>
+        <div class="actions">
+          <button class="btn btn-secondary btn-sm btn-icon" onclick="editCurso('${c.id}')" title="Editar">✏️</button>
+          <button class="btn btn-danger btn-sm btn-icon" onclick="deleteCurso('${c.id}')" title="Excluir">🗑️</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ══ MODAL CURSO ════════════════════════════════════════════════
+function openCursoModal(id){
+  editingId = id || null;
+  document.getElementById('modalTitle').textContent = id ? 'Editar curso' : 'Novo curso';
+  const curso = id ? cursosData.find(c=>c.id===id) : null;
+
+  // Fill fields
+  document.getElementById('f-nome').value = curso?.nome || '';
+  document.getElementById('f-desc').value = curso?.descricao || '';
+  document.getElementById('f-paraQuem').value = curso?.paraQuem || '';
+  document.getElementById('f-duracao').value = curso?.duracao || '';
+  document.getElementById('f-mensalidade').value = curso?.mensalidade || '';
+  document.getElementById('f-valorTotal').value = curso?.valorTotal || '';
+  document.getElementById('f-materialTotal').value = curso?.materialTotal || '';
+  document.getElementById('f-materialVista').value = curso?.materialVista || '';
+  document.getElementById('f-materialParcelado').value = curso?.materialParcelado || '';
+
+  // Modules
+  const container = document.getElementById('modulesContainer');
+  container.innerHTML = '';
+  const mods = curso?.modulos || [];
+  mods.forEach(m => addModulo(m.titulo, m.descricao, m.id));
+  if(!mods.length) addModulo();
+
+  document.getElementById('cursoModal').classList.add('open');
+}
+
+function closeCursoModal(){
+  document.getElementById('cursoModal').classList.remove('open');
+  editingId = null;
+}
+
+function editCurso(id){ openCursoModal(id); }
+
+function addModulo(titulo='', desc='', modId=''){
+  const container = document.getElementById('modulesContainer');
+  const div = document.createElement('div');
+  div.className = 'module-item';
+  div.dataset.id = modId || 'mod_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+  div.innerHTML = `
+    <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+      <input type="text" placeholder="Nome do módulo (ex: Introdução à Informática)" value="${titulo}" class="mod-titulo" style="background:transparent;border:none;outline:none;font-size:0.88rem;font-weight:600;color:var(--navy);font-family:inherit;"/>
+      <input type="text" placeholder="Descrição breve do módulo..." value="${desc}" class="mod-desc" style="background:transparent;border:none;outline:none;font-size:0.8rem;color:var(--muted);font-family:inherit;"/>
+    </div>
+    <button class="module-remove" onclick="this.parentElement.remove()" title="Remover">✕</button>
+  `;
+  container.appendChild(div);
+}
+
+// ══ SALVAR CURSO ══════════════════════════════════════════════
+async function salvarCurso(){
+  const nome = document.getElementById('f-nome').value.trim();
+  if(!nome){ showToast('Informe o nome do curso!','error'); return; }
+
+  const id = editingId || 'curso_'+Date.now();
+  const slug = nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+
+  // Collect modules
+  const modItems = document.querySelectorAll('#modulesContainer .module-item');
+  const modulos = Array.from(modItems).map(item=>({
+    id: item.dataset.id,
+    titulo: item.querySelector('.mod-titulo').value.trim(),
+    descricao: item.querySelector('.mod-desc').value.trim()
+  })).filter(m=>m.titulo);
+
+  const curso = {
+    id, slug, nome,
+    descricao: document.getElementById('f-desc').value.trim(),
+    paraQuem:  document.getElementById('f-paraQuem').value.trim(),
+    duracao:   document.getElementById('f-duracao').value.trim(),
+    mensalidade: document.getElementById('f-mensalidade').value,
+    valorTotal: document.getElementById('f-valorTotal').value,
+    materialVista: document.getElementById('f-materialVista').value,
+    materialTotal: document.getElementById('f-materialTotal').value,
+    materialParcelado: document.getElementById('f-materialParcelado').value.trim(),
+    updatedAt: new Date().toISOString(),
+    modulos
+  };
+
+  // Save locally always
+  const idx = cursosData.findIndex(c=>c.id===id);
+  if(idx>=0) cursosData[idx] = curso; else cursosData.push(curso);
+  localStorage.setItem('decole_cursos', JSON.stringify(cursosData));
+
+  // Save to Sheets if configured
+  if(SHEETS_URL){
+    try{
+      await apiPost('saveCurso', curso);
+      await apiPost('saveModulos', { cursoId: id, modulos });
+      showToast('Curso salvo no Google Sheets! ✓','success');
+    } catch(e){
+      showToast('Salvo localmente. Erro ao sincronizar com Sheets.','error');
+    }
+  } else {
+    showToast('Curso salvo localmente! Configure o Sheets para sincronizar.','success');
+  }
+
+  closeCursoModal();
+  renderCursos();
+  renderDashboard();
+}
+
+// ══ DELETAR CURSO ══════════════════════════════════════════════
+async function deleteCurso(id){
+  if(!confirm('Tem certeza que deseja excluir este curso e todos os seus módulos?')) return;
+  cursosData = cursosData.filter(c=>c.id!==id);
+  localStorage.setItem('decole_cursos', JSON.stringify(cursosData));
+  if(SHEETS_URL){
+    try{ await apiPost('deleteCurso',{id}); } catch(e){}
+  }
+  showToast('Curso excluído.','success');
+  renderCursos();
+  renderDashboard();
+}
+
+// ══ CONFIG / SHEETS ════════════════════════════════════════════
+function saveConfig(){
+  const url = document.getElementById('sheetsUrlInput').value.trim();
+  if(!url){ showToast('Cole a URL do Apps Script!','error'); return; }
+  SHEETS_URL = url;
+  localStorage.setItem('decole_sheets_url',''+url);
+  document.getElementById('configFeedback').textContent = '✅ URL salva! Testando conexão...';
+  testConnection();
+}
+
+async function testConnection(){
+  const url = document.getElementById('sheetsUrlInput').value.trim();
+  if(!url){ showToast('Cole a URL primeiro!','error'); return; }
+  SHEETS_URL = url;
+  const fb = document.getElementById('configFeedback');
+  fb.textContent = '🔄 Testando...';
+  const data = await apiGet('getCursos');
+  if(data !== null){
+    fb.textContent = '✅ Conexão bem-sucedida! '+data.length+' curso(s) encontrado(s).';
+    setStatus('ok');
+    cursosData = data;
+    renderDashboard(); renderCursos();
+    showToast('Sheets conectado com sucesso!','success');
+  } else {
+    fb.textContent = '❌ Não foi possível conectar. Verifique a URL e as permissões.';
+    setStatus('error');
+    showToast('Erro ao conectar com o Sheets.','error');
+  }
+}
+
+// ══ COPY SCRIPT ══════════════════════════════════════════════
+function copyScript(){
+  const code = document.getElementById('appsScriptCode').textContent;
+  navigator.clipboard.writeText(code).then(()=> showToast('Código copiado!','success'));
+}
+
+// ══ TOAST ══════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg, type=''){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show'+(type?' '+type:'');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.className=''; },3000);
+}
+
+// Close modal on overlay click
+document.getElementById('cursoModal').addEventListener('click', function(e){
+  if(e.target === this) closeCursoModal();
+});
+
+// Pre-fill sheets URL if exists
+if(SHEETS_URL) document.getElementById('sheetsUrlInput').value = SHEETS_URL;
+</script>
+</body>
+</html>
