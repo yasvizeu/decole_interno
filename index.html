@@ -3,935 +3,1056 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Decole · Painel Interno</title>
+<title>Decole · Painel</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{
-  --navy:#0b1f3a;
-  --navy2:#0d2847;
-  --blue:#1a3a5c;
-  --red:#e53935;
-  --red2:#ff4d4a;
-  --green:#16a34a;
-  --amber:#d97706;
-  --white:#ffffff;
-  --bg:#f0f4f8;
-  --surface:#ffffff;
-  --border:#e2e8f0;
-  --text:#1e293b;
-  --muted:#64748b;
-  --radius:12px;
-  --shadow:0 1px 3px rgba(0,0,0,0.08),0 4px 16px rgba(0,0,0,0.06);
-  --shadow-lg:0 8px 32px rgba(0,0,0,0.12);
+/* ═══════════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════════ */
+:root {
+  --navy:    #0b1f3a;
+  --navy2:   #0d2847;
+  --red:     #e53935;
+  --red2:    #ff4d4a;
+  --green:   #10b981;
+  --amber:   #f59e0b;
+  --white:   #ffffff;
+  --bg:      #f1f5f9;
+  --surface: #ffffff;
+  --border:  #e2e8f0;
+  --text:    #0f172a;
+  --muted:   #64748b;
+  --r:       14px;
+  --r-sm:    8px;
+  --sh:      0 1px 3px rgba(0,0,0,0.07), 0 4px 20px rgba(0,0,0,0.05);
+  --sh-lg:   0 8px 40px rgba(0,0,0,0.12);
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-img{max-width:100%;}
-a{text-decoration:none;color:inherit;}
-button{font-family:inherit;cursor:pointer;}
-input,select,textarea{font-family:inherit;}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; overflow-x: hidden;
+}
+button { font-family: inherit; cursor: pointer; }
+input, textarea, select { font-family: inherit; }
+a { text-decoration: none; color: inherit; }
 
-/* ── LOGIN ── */
-#loginScreen{
-  min-height:100vh;
-  display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);
-  padding:20px;
+/* ═══════════════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════════════ */
+#loginScreen {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--navy) 0%, #0a1628 100%);
+  padding: 20px; position: relative; overflow: hidden;
 }
-.login-card{
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:20px;
-  padding:44px 40px;
-  width:100%;max-width:400px;
-  text-align:center;
-  backdrop-filter:blur(20px);
+#loginScreen::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(229,57,53,0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(41,121,255,0.08) 0%, transparent 50%);
 }
-.login-logo{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:28px;}
-.login-logo .mark{
-  width:44px;height:44px;background:var(--red);border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.4rem;font-weight:900;color:white;
+#loginScreen::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
-.login-logo .brand-name{font-size:1.6rem;font-weight:800;color:white;letter-spacing:0.04em;}
-.login-logo .brand-sub{font-size:0.6rem;font-weight:700;letter-spacing:0.15em;color:rgba(255,255,255,0.45);text-transform:uppercase;margin-top:2px;}
-.login-title{font-size:1rem;font-weight:600;color:rgba(255,255,255,0.6);margin-bottom:28px;}
-.login-field{position:relative;margin-bottom:14px;}
-.login-field input{
-  width:100%;padding:13px 16px;
-  background:rgba(255,255,255,0.07);
-  border:1px solid rgba(255,255,255,0.15);
-  border-radius:10px;color:white;font-size:0.95rem;outline:none;
-  transition:border-color .2s;
+.login-card {
+  position: relative; z-index: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px; padding: 48px 40px;
+  width: 100%; max-width: 420px;
+  backdrop-filter: blur(24px);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.4);
 }
-.login-field input::placeholder{color:rgba(255,255,255,0.3);}
-.login-field input:focus{border-color:rgba(229,57,53,0.6);}
-.login-btn{
-  width:100%;padding:14px;background:var(--red);border:none;border-radius:10px;
-  color:white;font-size:0.95rem;font-weight:700;margin-top:6px;
-  transition:background .2s,transform .15s;
+.login-logo {
+  display: flex; align-items: center; gap: 12px;
+  justify-content: center; margin-bottom: 8px;
 }
-.login-btn:hover{background:#c62828;}
-.login-error{color:#ff6b6b;font-size:0.82rem;margin-top:8px;display:none;}
-
-/* ── APP SHELL ── */
-#app{display:none;}
-.sidebar{
-  position:fixed;top:0;left:0;bottom:0;width:240px;
-  background:var(--navy);color:white;
-  display:flex;flex-direction:column;
-  z-index:100;
-  transition:transform .3s;
+.login-logo-mark {
+  width: 48px; height: 48px; background: var(--red);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; font-weight: 900; color: white;
+  box-shadow: 0 4px 16px rgba(229,57,53,0.4);
 }
-.sidebar-brand{
-  padding:22px 20px 18px;
-  border-bottom:1px solid rgba(255,255,255,0.08);
-  display:flex;align-items:center;gap:10px;
+.login-logo-text .name {
+  font-size: 1.7rem; font-weight: 800;
+  color: white; letter-spacing: 0.04em; line-height: 1;
 }
-.sidebar-brand .mark{
-  width:36px;height:36px;background:var(--red);border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1rem;font-weight:900;color:white;flex-shrink:0;
+.login-logo-text .sub {
+  font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.35); margin-top: 3px;
 }
-.sidebar-brand .name{font-size:1.1rem;font-weight:800;letter-spacing:0.04em;}
-.sidebar-brand .sub{font-size:0.58rem;letter-spacing:0.12em;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-top:1px;}
-.sidebar-nav{flex:1;padding:14px 10px;display:flex;flex-direction:column;gap:4px;}
-.nav-item{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 12px;border-radius:8px;
-  font-size:0.9rem;font-weight:600;color:rgba(255,255,255,0.6);
-  cursor:pointer;transition:all .18s;border:none;background:transparent;width:100%;
+.login-tagline {
+  text-align: center; color: rgba(255,255,255,0.4);
+  font-size: 0.85rem; margin-bottom: 36px;
 }
-.nav-item:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.9);}
-.nav-item.active{background:rgba(229,57,53,0.18);color:white;}
-.nav-item .icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0;}
-.sidebar-footer{padding:14px 10px;border-top:1px solid rgba(255,255,255,0.08);}
-.logout-btn{
-  width:100%;padding:9px 12px;background:transparent;
-  border:1px solid rgba(255,255,255,0.12);border-radius:8px;
-  color:rgba(255,255,255,0.5);font-size:0.85rem;font-weight:600;
-  display:flex;align-items:center;gap:8px;transition:all .18s;
+.login-field { margin-bottom: 14px; }
+.login-field label {
+  display: block; font-size: 0.75rem; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4); margin-bottom: 6px;
 }
-.logout-btn:hover{border-color:rgba(229,57,53,0.4);color:#ff6b6b;}
-
-/* ── MAIN CONTENT ── */
-.main{margin-left:240px;min-height:100vh;padding:28px 30px;}
-.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
-.topbar h1{font-size:1.4rem;font-weight:800;color:var(--navy);}
-.topbar p{font-size:0.85rem;color:var(--muted);margin-top:2px;}
-.sheets-status{
-  display:flex;align-items:center;gap:8px;
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:8px;padding:8px 14px;font-size:0.8rem;font-weight:600;
+.login-field input {
+  width: 100%; padding: 13px 16px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--r-sm); color: white;
+  font-size: 0.95rem; outline: none;
+  transition: border-color .2s, background .2s;
 }
-.status-dot{width:8px;height:8px;border-radius:50%;background:#94a3b8;}
-.status-dot.ok{background:var(--green);}
-.status-dot.err{background:var(--red);}
-
-/* ── PANELS ── */
-.panel{display:none;}
-.panel.active{display:block;}
-
-/* ── CARDS / STATS ── */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
-.stat-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);padding:20px;
+.login-field input::placeholder { color: rgba(255,255,255,0.2); }
+.login-field input:focus {
+  border-color: rgba(229,57,53,0.5);
+  background: rgba(255,255,255,0.09);
 }
-.stat-label{font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);}
-.stat-value{font-size:2rem;font-weight:800;color:var(--navy);margin-top:6px;line-height:1;}
-.stat-sub{font-size:0.78rem;color:var(--muted);margin-top:4px;}
-
-/* ── SECTION HEADER ── */
-.section-hd{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:18px;
+.login-btn {
+  width: 100%; padding: 14px;
+  background: var(--red); border: none;
+  border-radius: var(--r-sm); color: white;
+  font-size: 0.95rem; font-weight: 700; margin-top: 6px;
+  transition: background .2s, transform .15s;
+  box-shadow: 0 4px 16px rgba(229,57,53,0.35);
 }
-.section-hd h2{font-size:1.05rem;font-weight:700;color:var(--navy);}
-
-/* ── BTN ── */
-.btn{
-  display:inline-flex;align-items:center;gap:7px;
-  padding:9px 18px;border-radius:8px;font-size:0.85rem;font-weight:700;
-  border:1px solid transparent;transition:all .18s;cursor:pointer;
-}
-.btn-primary{background:var(--red);color:white;border-color:var(--red);}
-.btn-primary:hover{background:#c62828;border-color:#c62828;}
-.btn-secondary{background:white;color:var(--text);border-color:var(--border);}
-.btn-secondary:hover{border-color:#94a3b8;}
-.btn-danger{background:white;color:var(--red);border-color:#fecaca;}
-.btn-danger:hover{background:#fff1f1;}
-.btn-sm{padding:6px 12px;font-size:0.78rem;}
-.btn-icon{padding:7px;border-radius:7px;}
-
-/* ── TABLE ── */
-.table-wrap{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
-}
-table{width:100%;border-collapse:collapse;}
-thead{background:#f8fafc;}
-th{padding:11px 16px;text-align:left;font-size:0.75rem;font-weight:700;
-   text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);
-   border-bottom:1px solid var(--border);}
-td{padding:13px 16px;font-size:0.87rem;border-bottom:1px solid #f1f5f9;vertical-align:middle;}
-tr:last-child td{border-bottom:none;}
-tr:hover td{background:#f8fafc;}
-.td-title{font-weight:600;color:var(--navy);}
-.td-muted{color:var(--muted);}
-.badge{
-  display:inline-flex;padding:3px 10px;border-radius:999px;
-  font-size:0.72rem;font-weight:700;
-}
-.badge-blue{background:#dbeafe;color:#1e40af;}
-.badge-purple{background:#ede9fe;color:#5b21b6;}
-.badge-orange{background:#ffedd5;color:#9a3412;}
-.badge-green{background:#dcfce7;color:#166534;}
-.actions{display:flex;gap:6px;}
-
-/* ── MODAL ── */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,0.45);
-  display:none;align-items:center;justify-content:center;
-  z-index:200;padding:20px;
-}
-.modal-overlay.open{display:flex;}
-.modal{
-  background:white;border-radius:16px;width:100%;max-width:620px;
-  max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);
-}
-.modal-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:22px 26px 18px;border-bottom:1px solid var(--border);
-  position:sticky;top:0;background:white;z-index:1;
-}
-.modal-header h3{font-size:1.05rem;font-weight:700;}
-.modal-close{
-  width:32px;height:32px;border-radius:8px;border:1px solid var(--border);
-  background:white;display:flex;align-items:center;justify-content:center;
-  font-size:1rem;color:var(--muted);cursor:pointer;transition:all .18s;
-}
-.modal-close:hover{background:#f1f5f9;}
-.modal-body{padding:22px 26px;}
-.modal-footer{
-  padding:16px 26px;border-top:1px solid var(--border);
-  display:flex;justify-content:flex-end;gap:10px;
-  position:sticky;bottom:0;background:white;
+.login-btn:hover:not(:disabled) { background: #c62828; transform: translateY(-1px); }
+.login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.login-error {
+  color: #ff8a88; font-size: 0.82rem;
+  text-align: center; margin-top: 12px;
+  display: none;
 }
 
-/* ── FORM ── */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.form-grid.full{grid-template-columns:1fr;}
-.field-group{display:flex;flex-direction:column;gap:5px;}
-.field-group.span2{grid-column:span 2;}
-.field-group label{font-size:0.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;}
-.field-group input,
-.field-group select,
-.field-group textarea{
-  padding:10px 13px;border:1px solid var(--border);border-radius:8px;
-  font-size:0.9rem;outline:none;transition:border-color .18s,box-shadow .18s;
-  background:white;color:var(--text);
-}
-.field-group input:focus,
-.field-group select:focus,
-.field-group textarea:focus{
-  border-color:#94a3b8;
-  box-shadow:0 0 0 3px rgba(100,116,139,0.1);
-}
-.field-group textarea{resize:vertical;min-height:80px;line-height:1.6;}
-.field-hint{font-size:0.72rem;color:var(--muted);}
-.currency-wrap{position:relative;}
-.currency-wrap span{
-  position:absolute;left:12px;top:50%;transform:translateY(-50%);
-  font-size:0.85rem;font-weight:600;color:var(--muted);
-}
-.currency-wrap input{padding-left:30px;}
+/* ═══════════════════════════════════════════════
+   APP SHELL
+═══════════════════════════════════════════════ */
+#app { display: none; }
 
-/* ── MODULES SECTION inside course form ── */
-.modules-section{margin-top:20px;}
-.modules-section h4{font-size:0.85rem;font-weight:700;color:var(--navy);margin-bottom:10px;}
-.module-item{
-  background:#f8fafc;border:1px solid var(--border);border-radius:8px;
-  padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0; width: 256px;
+  background: var(--navy);
+  display: flex; flex-direction: column;
+  z-index: 100; transition: transform .3s cubic-bezier(.4,0,.2,1);
+  border-right: 1px solid rgba(255,255,255,0.06);
 }
-.module-item input{
-  flex:1;border:none;background:transparent;font-size:0.88rem;
-  color:var(--text);outline:none;font-family:inherit;
+.sidebar-top {
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; gap: 11px;
 }
-.module-remove{
-  width:26px;height:26px;border-radius:6px;border:1px solid #fecaca;
-  background:white;color:var(--red);font-size:0.9rem;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
+.sb-mark {
+  width: 36px; height: 36px; background: var(--red);
+  border-radius: 8px; display: flex; align-items: center;
+  justify-content: center; font-size: 1rem; font-weight: 900;
+  color: white; flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(229,57,53,0.35);
 }
-.add-module-btn{
-  width:100%;padding:9px;border:1px dashed var(--border);border-radius:8px;
-  background:transparent;color:var(--muted);font-size:0.82rem;font-weight:600;
-  cursor:pointer;transition:all .18s;
-}
-.add-module-btn:hover{border-color:#94a3b8;color:var(--text);background:#f8fafc;}
+.sb-name { font-size: 1.05rem; font-weight: 800; color: white; letter-spacing: 0.03em; }
+.sb-sub  { font-size: 0.58rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-top: 2px; }
 
-/* ── EMPTY STATE ── */
-.empty-state{
-  text-align:center;padding:60px 20px;
-  color:var(--muted);
+.sidebar-user {
+  margin: 16px 12px 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--r-sm); padding: 10px 13px;
+  display: flex; align-items: center; gap: 10px;
 }
-.empty-state .icon{font-size:2.5rem;margin-bottom:12px;opacity:0.5;}
-.empty-state p{font-size:0.9rem;}
+.user-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--red), #ff6b6b);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem; font-weight: 800; color: white; flex-shrink: 0;
+}
+.user-email { font-size: 0.75rem; color: rgba(255,255,255,0.5); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* ── TOAST ── */
-#toast{
-  position:fixed;bottom:24px;right:24px;
-  background:var(--navy);color:white;
-  padding:12px 20px;border-radius:10px;font-size:0.85rem;font-weight:600;
-  box-shadow:var(--shadow-lg);z-index:999;
-  transform:translateY(20px);opacity:0;transition:all .3s;
-  display:flex;align-items:center;gap:8px;
+.sidebar-nav { flex: 1; padding: 8px 12px; display: flex; flex-direction: column; gap: 2px; }
+.nav-section {
+  font-size: 0.62rem; font-weight: 800; letter-spacing: 0.14em;
+  text-transform: uppercase; color: rgba(255,255,255,0.2);
+  padding: 14px 8px 6px;
 }
-#toast.show{transform:translateY(0);opacity:1;}
-#toast.success{background:var(--green);}
-#toast.error{background:var(--red);}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--r-sm);
+  font-size: 0.875rem; font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  cursor: pointer; transition: all .18s;
+  border: none; background: transparent; width: 100%;
+}
+.nav-item .ni-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+.nav-item .ni-badge {
+  margin-left: auto; background: rgba(229,57,53,0.2);
+  color: #ff8a88; font-size: 0.65rem; font-weight: 800;
+  padding: 2px 7px; border-radius: 999px;
+}
+.nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85); }
+.nav-item.active { background: rgba(229,57,53,0.15); color: white; }
+.nav-item.active .ni-icon { filter: none; }
 
-/* ── SHEETS CONFIG ── */
-.config-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);padding:24px;margin-bottom:20px;
-  box-shadow:var(--shadow);
+.sidebar-footer {
+  padding: 12px; border-top: 1px solid rgba(255,255,255,0.06);
 }
-.config-card h3{font-size:0.95rem;font-weight:700;margin-bottom:4px;}
-.config-card p{font-size:0.83rem;color:var(--muted);margin-bottom:16px;line-height:1.6;}
-.code-block{
-  background:#0f172a;color:#7dd3fc;
-  border-radius:8px;padding:14px 16px;
-  font-family:monospace;font-size:0.8rem;line-height:1.7;
-  white-space:pre-wrap;margin-bottom:14px;overflow-x:auto;
+.logout-btn {
+  width: 100%; padding: 10px 12px;
+  background: transparent; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--r-sm); color: rgba(255,255,255,0.4);
+  font-size: 0.82rem; font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+  transition: all .18s;
 }
-.step-list{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
-.step-item{display:flex;gap:12px;align-items:flex-start;}
-.step-num{
-  width:24px;height:24px;border-radius:50%;background:var(--red);
-  color:white;font-size:0.72rem;font-weight:800;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
-}
-.step-text{font-size:0.85rem;line-height:1.6;color:var(--text);}
+.logout-btn:hover { border-color: rgba(229,57,53,0.4); color: #ff8a88; }
 
-/* ── RESPONSIVE ── */
-@media(max-width:900px){
-  .sidebar{transform:translateX(-100%);}
-  .sidebar.open{transform:translateX(0);}
-  .main{margin-left:0;padding:20px 16px;}
-  .stats-grid{grid-template-columns:1fr 1fr;}
-  .form-grid{grid-template-columns:1fr;}
-  .field-group.span2{grid-column:span 1;}
-  .hamburger{display:flex!important;}
+/* ═══════════════════════════════════════════════
+   MAIN
+═══════════════════════════════════════════════ */
+.main { margin-left: 256px; min-height: 100vh; }
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  min-height: 64px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; position: sticky; top: 0; z-index: 50;
 }
-.hamburger{
-  display:none;align-items:center;justify-content:center;
-  width:38px;height:38px;background:var(--navy);border-radius:8px;
-  border:none;cursor:pointer;color:white;font-size:1.1rem;margin-right:12px;
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.hamburger {
+  display: none; width: 36px; height: 36px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--r-sm); align-items: center; justify-content: center;
+  font-size: 1rem; cursor: pointer;
 }
-.overlay-bg{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:99;
+.topbar-title { font-size: 1rem; font-weight: 700; color: var(--text); }
+.topbar-sub   { font-size: 0.78rem; color: var(--muted); }
+.status-pill {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 999px; padding: 6px 14px;
+  font-size: 0.75rem; font-weight: 700; color: var(--muted);
+}
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #cbd5e1; transition: background .3s;
+}
+.status-dot.ok  { background: var(--green); box-shadow: 0 0 6px rgba(16,185,129,0.4); }
+.status-dot.err { background: var(--red); }
+
+.content { padding: 28px; }
+
+/* ═══════════════════════════════════════════════
+   PANELS
+═══════════════════════════════════════════════ */
+.panel { display: none; animation: fadeUp .25s ease; }
+.panel.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* ═══════════════════════════════════════════════
+   STATS
+═══════════════════════════════════════════════ */
+.stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 28px; }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 20px 22px;
+  box-shadow: var(--sh); position: relative; overflow: hidden;
+}
+.stat-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.stat-card.s-blue::before  { background: linear-gradient(90deg,#3b82f6,#60a5fa); }
+.stat-card.s-red::before   { background: linear-gradient(90deg,var(--red),var(--red2)); }
+.stat-card.s-green::before { background: linear-gradient(90deg,#10b981,#34d399); }
+.stat-card.s-amber::before { background: linear-gradient(90deg,#f59e0b,#fbbf24); }
+.stat-icon {
+  width: 38px; height: 38px; border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; margin-bottom: 14px;
+}
+.s-blue .stat-icon  { background: #eff6ff; }
+.s-red .stat-icon   { background: #fff1f0; }
+.s-green .stat-icon { background: #ecfdf5; }
+.s-amber .stat-icon { background: #fffbeb; }
+.stat-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.stat-value { font-size: 2rem; font-weight: 800; color: var(--text); line-height: 1; margin-top: 4px; }
+.stat-sub   { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+/* ═══════════════════════════════════════════════
+   SECTION HEADER
+═══════════════════════════════════════════════ */
+.sec-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px;
+}
+.sec-hd h2 { font-size: 1rem; font-weight: 700; }
+
+/* ═══════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════ */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 18px; border-radius: var(--r-sm);
+  font-size: 0.84rem; font-weight: 700;
+  border: 1px solid transparent; transition: all .18s; cursor: pointer;
+}
+.btn-primary { background: var(--red); color: white; box-shadow: 0 2px 10px rgba(229,57,53,0.25); }
+.btn-primary:hover { background: #c62828; transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-ghost  { background: transparent; color: var(--muted); border-color: var(--border); }
+.btn-ghost:hover  { border-color: #94a3b8; color: var(--text); }
+.btn-danger { background: #fff1f0; color: var(--red); border-color: #fecaca; }
+.btn-danger:hover { background: #ffe4e3; }
+.btn-sm { padding: 6px 12px; font-size: 0.77rem; border-radius: 7px; }
+.btn-icon { padding: 7px; border-radius: 7px; }
+
+/* ═══════════════════════════════════════════════
+   TABLE
+═══════════════════════════════════════════════ */
+.table-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); overflow: hidden; box-shadow: var(--sh);
+}
+table { width: 100%; border-collapse: collapse; }
+thead { background: #f8fafc; }
+th {
+  padding: 11px 16px; text-align: left;
+  font-size: 0.7rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--muted); border-bottom: 1px solid var(--border);
+}
+td {
+  padding: 13px 16px; font-size: 0.86rem;
+  border-bottom: 1px solid #f1f5f9; vertical-align: middle;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #f8fafc; }
+.td-name { font-weight: 700; color: var(--text); }
+.td-muted { color: var(--muted); font-size: 0.82rem; }
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px; border-radius: 999px;
+  font-size: 0.7rem; font-weight: 700;
+}
+.badge-blue   { background: #dbeafe; color: #1d4ed8; }
+.badge-green  { background: #dcfce7; color: #15803d; }
+.badge-red    { background: #fee2e2; color: #b91c1c; }
+.actions-cell { display: flex; gap: 5px; }
+
+/* ═══════════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════════ */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,0.5);
+  backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center;
+  z-index: 200; padding: 20px;
+}
+.overlay.open { display: flex; }
+.modal {
+  background: var(--surface); border-radius: 20px;
+  width: 100%; max-width: 640px; max-height: 92vh;
+  overflow-y: auto; box-shadow: var(--sh-lg);
+  animation: modalIn .22s cubic-bezier(.4,0,.2,1);
+}
+@keyframes modalIn { from { opacity:0; transform:scale(.96) translateY(8px); } to { opacity:1; transform:none; } }
+.modal-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 26px 18px; border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; background: var(--surface); z-index: 1;
+}
+.modal-hd h3 { font-size: 1.05rem; font-weight: 800; }
+.modal-close {
+  width: 32px; height: 32px; border-radius: var(--r-sm);
+  border: 1px solid var(--border); background: white;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); font-size: 0.9rem; cursor: pointer;
+  transition: all .18s;
+}
+.modal-close:hover { background: var(--bg); color: var(--text); }
+.modal-body { padding: 24px 26px; }
+.modal-ft {
+  display: flex; justify-content: flex-end; gap: 10px;
+  padding: 16px 26px; border-top: 1px solid var(--border);
+  position: sticky; bottom: 0; background: var(--surface);
+}
+
+/* ═══════════════════════════════════════════════
+   FORM
+═══════════════════════════════════════════════ */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.fg { display: flex; flex-direction: column; gap: 5px; }
+.fg.span2 { grid-column: span 2; }
+.fg label {
+  font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted);
+}
+.fg input, .fg textarea, .fg select {
+  padding: 10px 13px; border: 1.5px solid var(--border);
+  border-radius: var(--r-sm); font-size: 0.9rem;
+  background: white; color: var(--text); outline: none;
+  transition: border-color .18s, box-shadow .18s;
+}
+.fg input:focus, .fg textarea:focus {
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 3px rgba(148,163,184,0.15);
+}
+.fg textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+.prefix-wrap { position: relative; }
+.prefix-wrap .prefix {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 0.82rem; font-weight: 700; color: var(--muted); pointer-events: none;
+}
+.prefix-wrap input { padding-left: 28px; }
+
+/* Material block */
+.material-block {
+  background: #f8fafc; border: 1.5px solid var(--border);
+  border-radius: var(--r-sm); padding: 16px;
+  grid-column: span 2;
+}
+.material-block .block-label {
+  font-size: 0.72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.07em;
+  color: var(--muted); margin-bottom: 12px; display: block;
+}
+.material-block .inner-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+/* Modules */
+.mods-section { margin-top: 22px; }
+.mods-section .mods-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.mods-section .mods-hd h4 { font-size: 0.85rem; font-weight: 700; }
+.mod-item {
+  background: #f8fafc; border: 1.5px solid var(--border);
+  border-radius: var(--r-sm); padding: 12px 14px;
+  margin-bottom: 8px; display: flex; align-items: flex-start; gap: 10px;
+  transition: border-color .18s;
+}
+.mod-item:hover { border-color: #94a3b8; }
+.mod-fields { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.mod-fields input {
+  background: transparent; border: none; outline: none;
+  font-family: inherit; color: var(--text);
+}
+.mod-fields input:first-child { font-size: 0.88rem; font-weight: 700; }
+.mod-fields input:last-child  { font-size: 0.8rem; color: var(--muted); }
+.mod-del {
+  width: 26px; height: 26px; border-radius: 6px;
+  border: 1.5px solid #fecaca; background: white;
+  color: var(--red); font-size: 0.85rem; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .18s; margin-top: 2px;
+}
+.mod-del:hover { background: #fee2e2; }
+.btn-add-mod {
+  width: 100%; padding: 9px;
+  border: 1.5px dashed var(--border); border-radius: var(--r-sm);
+  background: transparent; color: var(--muted);
+  font-size: 0.82rem; font-weight: 600; cursor: pointer;
+  transition: all .18s;
+}
+.btn-add-mod:hover { border-color: #94a3b8; color: var(--text); background: #f8fafc; }
+
+/* ═══════════════════════════════════════════════
+   EMPTY STATE
+═══════════════════════════════════════════════ */
+.empty-state { text-align: center; padding: 64px 20px; }
+.empty-icon  { font-size: 2.8rem; opacity: 0.25; margin-bottom: 14px; }
+.empty-state p { color: var(--muted); font-size: 0.9rem; }
+
+/* ═══════════════════════════════════════════════
+   LOADING SKELETON
+═══════════════════════════════════════════════ */
+.skel {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: skel 1.4s infinite;
+  border-radius: 6px; height: 14px;
+}
+@keyframes skel { to { background-position: -200% 0; } }
+
+/* ═══════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════ */
+#toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  display: flex; align-items: center; gap: 10px;
+  padding: 13px 20px; border-radius: 12px;
+  font-size: 0.85rem; font-weight: 700; color: white;
+  background: var(--text); box-shadow: var(--sh-lg);
+  opacity: 0; transform: translateY(12px);
+  transition: all .28s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
+}
+#toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+#toast.ok  { background: #064e3b; }
+#toast.err { background: #7f1d1d; }
+
+/* ═══════════════════════════════════════════════
+   OVERLAY BG (mobile)
+═══════════════════════════════════════════════ */
+.overlay-bg {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5); z-index: 99;
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media (max-width: 960px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .hamburger { display: flex; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .fg.span2, .material-block { grid-column: span 1; }
+  .material-block .inner-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .content { padding: 18px 16px; }
+  .stats-row { grid-template-columns: 1fr; }
+  .modal { border-radius: 16px; }
+  .topbar { padding: 0 16px; }
 }
 </style>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-<!-- ══ LOGIN ══════════════════════════════════════════════════════ -->
+<!-- ═══════════ LOGIN ═══════════════════════════ -->
 <div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">
-      <div class="mark">D</div>
-      <div>
-        <div class="brand-name">DECOLE</div>
-        <div class="brand-sub">Painel Interno</div>
+      <div class="login-logo-mark">D</div>
+      <div class="login-logo-text">
+        <div class="name">DECOLE</div>
+        <div class="sub">Treinamento Profissional</div>
       </div>
     </div>
-    <p class="login-title">Acesso restrito à equipe</p>
+    <p class="login-tagline">Painel interno da equipe</p>
+
     <div class="login-field">
-      <input type="password" id="loginInput" placeholder="Digite a senha" onkeydown="if(event.key==='Enter')doLogin()"/>
+      <label>E-mail</label>
+      <input type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="email"/>
     </div>
-    <button class="login-btn" onclick="doLogin()">Entrar</button>
-    <p class="login-error" id="loginError">Senha incorreta. Tente novamente.</p>
+    <div class="login-field">
+      <label>Senha</label>
+      <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter') doLogin()"/>
+    </div>
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Entrar</button>
+    <p class="login-error" id="loginError"></p>
   </div>
 </div>
 
-<!-- ══ APP ══════════════════════════════════════════════════════ -->
+<!-- ═══════════ APP ═══════════════════════════════ -->
 <div id="app">
   <div class="overlay-bg" id="overlayBg" onclick="closeSidebar()"></div>
 
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">
-      <div class="mark">D</div>
+    <div class="sidebar-top">
+      <div class="sb-mark">D</div>
       <div>
-        <div class="name">DECOLE</div>
-        <div class="sub">Painel Interno</div>
+        <div class="sb-name">DECOLE</div>
+        <div class="sb-sub">Painel Interno</div>
       </div>
     </div>
+
+    <div class="sidebar-user">
+      <div class="user-avatar" id="userAvatar">?</div>
+      <div class="user-email" id="userEmail">—</div>
+    </div>
+
     <nav class="sidebar-nav">
-      <button class="nav-item active" onclick="showPanel('dashboard')" id="nav-dashboard">
-        <span class="icon">📊</span> Dashboard
+      <div class="nav-section">Menu</div>
+      <button class="nav-item active" id="nav-dashboard" onclick="showPanel('dashboard')">
+        <span class="ni-icon">📊</span> Dashboard
       </button>
-      <button class="nav-item" onclick="showPanel('cursos')" id="nav-cursos">
-        <span class="icon">📚</span> Cursos
-      </button>
-      <button class="nav-item" onclick="showPanel('configurar')" id="nav-configurar">
-        <span class="icon">⚙️</span> Configurações
+      <button class="nav-item" id="nav-cursos" onclick="showPanel('cursos')">
+        <span class="ni-icon">📚</span> Cursos
+        <span class="ni-badge" id="navBadgeCursos">0</span>
       </button>
     </nav>
+
     <div class="sidebar-footer">
       <button class="logout-btn" onclick="doLogout()">
-        <span>🚪</span> Sair
+        <span>🚪</span> Sair da conta
       </button>
     </div>
   </aside>
 
   <!-- MAIN -->
-  <main class="main">
+  <div class="main">
     <div class="topbar">
-      <div style="display:flex;align-items:center;gap:0">
-        <button class="hamburger" id="hamburger" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-left">
+        <button class="hamburger" onclick="toggleSidebar()">☰</button>
         <div>
-          <h1 id="pageTitle">Dashboard</h1>
-          <p id="pageSubtitle">Bem-vinda ao painel da Decole</p>
+          <div class="topbar-title" id="pageTitle">Dashboard</div>
+          <div class="topbar-sub"  id="pageSub">Visão geral</div>
         </div>
       </div>
-      <div class="sheets-status">
+      <div class="status-pill">
         <div class="status-dot" id="statusDot"></div>
-        <span id="statusText">Verificando Sheets...</span>
+        <span id="statusTxt">Conectando...</span>
       </div>
     </div>
 
-    <!-- DASHBOARD -->
-    <div class="panel active" id="panel-dashboard">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Total de Cursos</div>
-          <div class="stat-value" id="statCursos">—</div>
-          <div class="stat-sub">cadastrados</div>
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="stats-row">
+          <div class="stat-card s-blue">
+            <div class="stat-icon">📚</div>
+            <div class="stat-label">Total de cursos</div>
+            <div class="stat-value" id="stCursos">—</div>
+            <div class="stat-sub">cadastrados</div>
+          </div>
+          <div class="stat-card s-red">
+            <div class="stat-icon">📦</div>
+            <div class="stat-label">Total de módulos</div>
+            <div class="stat-value" id="stModulos">—</div>
+            <div class="stat-sub">em todos os cursos</div>
+          </div>
+          <div class="stat-card s-green">
+            <div class="stat-icon">💰</div>
+            <div class="stat-label">Menor mensalidade</div>
+            <div class="stat-value" id="stMensal" style="font-size:1.3rem;margin-top:8px;">—</div>
+            <div class="stat-sub">entre os cursos</div>
+          </div>
+          <div class="stat-card s-amber">
+            <div class="stat-icon">🕐</div>
+            <div class="stat-label">Última atualização</div>
+            <div class="stat-value" id="stUpdate" style="font-size:1rem;margin-top:10px;line-height:1.3;">—</div>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Total de Módulos</div>
-          <div class="stat-value" id="statModulos">—</div>
-          <div class="stat-sub">em todos os cursos</div>
+
+        <div class="sec-hd">
+          <h2>Cursos cadastrados</h2>
+          <button class="btn btn-primary btn-sm" onclick="showPanel('cursos')">Ver todos →</button>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">Menor Mensalidade</div>
-          <div class="stat-value" id="statMensal">—</div>
-          <div class="stat-sub">entre os cursos</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Última atualização</div>
-          <div class="stat-value" style="font-size:1rem;margin-top:10px;" id="statUpdate">—</div>
-          <div class="stat-sub">no Google Sheets</div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Curso</th><th>Módulos</th><th>Mensalidade</th><th>Total</th></tr></thead>
+            <tbody id="dashTable"><tr><td colspan="4" style="padding:30px;text-align:center;color:var(--muted)">Carregando...</td></tr></tbody>
+          </table>
         </div>
       </div>
 
-      <div class="section-hd">
-        <h2>Cursos cadastrados</h2>
-        <button class="btn btn-primary btn-sm" onclick="showPanel('cursos')">Ver todos →</button>
+      <!-- CURSOS -->
+      <div class="panel" id="panel-cursos">
+        <div class="sec-hd">
+          <h2>Todos os cursos</h2>
+          <button class="btn btn-primary" onclick="openModal()">＋ Novo curso</button>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead>
+              <tr>
+                <th>Curso</th><th>Para quem</th><th>Duração</th>
+                <th>Mensalidade</th><th>Total</th><th>Material</th>
+                <th>Módulos</th><th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="cursosTable"><tr><td colspan="8" style="padding:30px;text-align:center;color:var(--muted)">Carregando...</td></tr></tbody>
+          </table>
+        </div>
       </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Curso</th>
-              <th>Módulos</th>
-              <th>Mensalidade</th>
-              <th>Valor Total</th>
-            </tr>
-          </thead>
-          <tbody id="dashCursosTable">
-            <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:30px;">Carregando...</td></tr>
-          </tbody>
-        </table>
-      </div>
+
     </div>
+  </div>
+</div>
 
-    <!-- CURSOS -->
-    <div class="panel" id="panel-cursos">
-      <div class="section-hd">
-        <h2>Todos os cursos</h2>
-        <button class="btn btn-primary" onclick="openCursoModal()">+ Novo curso</button>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Curso</th>
-              <th>Para quem é</th>
-              <th>Duração</th>
-              <th>Mensalidade</th>
-              <th>Total</th>
-              <th>Material</th>
-              <th>Módulos</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="cursosTable">
-            <tr><td colspan="8" style="text-align:center;color:var(--muted);padding:30px;">Carregando...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- CONFIGURAR -->
-    <div class="panel" id="panel-configurar">
-      <div class="config-card">
-        <h3>🔑 Token do GitHub</h3>
-        <p>O painel salva os dados diretamente no seu repositório via GitHub API. Para isso, você precisa de um <strong>Personal Access Token</strong>. O token fica salvo só no seu navegador — nunca no código.</p>
-        <div class="step-list">
-          <div class="step-item"><div class="step-num">1</div><div class="step-text">Acesse <strong>github.com → Settings → Developer settings → Personal access tokens → Tokens (classic)</strong></div></div>
-          <div class="step-item"><div class="step-num">2</div><div class="step-text">Clique em <strong>Generate new token (classic)</strong>, dê um nome e marque o escopo <strong>repo</strong></div></div>
-          <div class="step-item"><div class="step-num">3</div><div class="step-text">Copie o token gerado e cole no campo abaixo</div></div>
-        </div>
-        <div class="field-group" style="margin-bottom:12px;">
-          <label>Personal Access Token</label>
-          <input type="password" id="ghTokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"/>
-        </div>
-        <button class="btn btn-primary" onclick="saveToken()">💾 Salvar token e conectar</button>
-        <p class="field-hint" style="margin-top:10px;">🔒 O token é salvo apenas no localStorage do seu navegador. Cada computador precisa configurar uma vez.</p>
-      </div>
-
-      <div class="config-card">
-        <h3>📁 Como funciona</h3>
-        <p>Ao salvar um curso, o painel cria ou atualiza o arquivo <strong>data.json</strong> no repositório <strong>yasvizeu/decole_interno</strong>. O site vitrine lê esse mesmo arquivo para exibir os cursos ao público.</p>
-        <div class="code-block">Repositório: yasvizeu/decole_interno
-Arquivo:     data.json
-Formato:     { "cursos": [ ... ], "updatedAt": "..." }</div>
-        <p style="font-size:0.83rem;color:var(--muted);margin-top:10px;">⚠️ O repositório precisa ser <strong>público</strong> para o site vitrine conseguir ler os dados.</p>
-      </div>
-    </div>
-
-    </main><!-- /main -->
-</div><!-- /app -->
-
-<!-- ══ MODAL CURSO ══════════════════════════════════════════════ -->
-<div class="modal-overlay" id="cursoModal">
+<!-- ═══════════ MODAL ═════════════════════════════ -->
+<div class="overlay" id="modalOverlay">
   <div class="modal">
-    <div class="modal-header">
+    <div class="modal-hd">
       <h3 id="modalTitle">Novo Curso</h3>
-      <button class="modal-close" onclick="closeCursoModal()">✕</button>
+      <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-body">
       <div class="form-grid">
-        <div class="field-group span2">
+        <div class="fg span2">
           <label>Nome do curso *</label>
           <input type="text" id="f-nome" placeholder="Ex: Operador de Computador"/>
         </div>
-        <div class="field-group span2">
+        <div class="fg span2">
           <label>Descrição</label>
           <textarea id="f-desc" placeholder="Descreva o curso em 2-3 linhas..."></textarea>
         </div>
-        <div class="field-group span2">
+        <div class="fg span2">
           <label>Para quem é</label>
           <input type="text" id="f-paraQuem" placeholder="Ex: Quem quer aprender informática do zero"/>
         </div>
-        <div class="field-group">
+        <div class="fg">
           <label>Duração média</label>
           <input type="text" id="f-duracao" placeholder="Ex: 6 meses"/>
         </div>
-        <div class="field-group">
+        <div class="fg">
           <label>Mensalidade (R$)</label>
-          <div class="currency-wrap">
-            <span>R$</span>
+          <div class="prefix-wrap">
+            <span class="prefix">R$</span>
             <input type="number" id="f-mensalidade" placeholder="0,00" step="0.01" min="0"/>
           </div>
         </div>
-        <div class="field-group">
+        <div class="fg span2">
           <label>Valor total do curso (R$)</label>
-          <div class="currency-wrap">
-            <span>R$</span>
+          <div class="prefix-wrap">
+            <span class="prefix">R$</span>
             <input type="number" id="f-valorTotal" placeholder="0,00" step="0.01" min="0"/>
           </div>
         </div>
         <!-- MATERIAL -->
-        <div class="field-group span2" style="background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:16px;grid-column:span 2;">
-          <label style="margin-bottom:12px;display:block;">📦 Material didático</label>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-            <div class="field-group">
+        <div class="material-block">
+          <span class="block-label">📦 Material didático</span>
+          <div class="inner-grid">
+            <div class="fg">
               <label>Total do material (R$)</label>
-              <div class="currency-wrap">
-                <span>R$</span>
-                <input type="number" id="f-materialTotal" placeholder="0,00" step="0.01" min="0"/>
+              <div class="prefix-wrap">
+                <span class="prefix">R$</span>
+                <input type="number" id="f-matTotal" placeholder="0,00" step="0.01" min="0"/>
               </div>
             </div>
-            <div class="field-group">
+            <div class="fg">
               <label>À vista (R$)</label>
-              <div class="currency-wrap">
-                <span>R$</span>
-                <input type="number" id="f-materialVista" placeholder="0,00" step="0.01" min="0"/>
+              <div class="prefix-wrap">
+                <span class="prefix">R$</span>
+                <input type="number" id="f-matVista" placeholder="0,00" step="0.01" min="0"/>
               </div>
             </div>
-            <div class="field-group">
+            <div class="fg">
               <label>Parcelado em</label>
-              <input type="text" id="f-materialParcelado" placeholder="Ex: 3x de R$ 30,00"/>
+              <input type="text" id="f-matParc" placeholder="Ex: 3x de R$ 30,00"/>
             </div>
           </div>
         </div>
       </div>
 
       <!-- MÓDULOS -->
-      <div class="modules-section">
-        <h4>📦 Módulos do curso</h4>
-        <div id="modulesContainer"></div>
-        <button class="add-module-btn" onclick="addModulo()">+ Adicionar módulo</button>
+      <div class="mods-section">
+        <div class="mods-hd">
+          <h4>📦 Módulos do curso</h4>
+          <button class="btn btn-ghost btn-sm" type="button" onclick="addMod()">＋ Adicionar</button>
+        </div>
+        <div id="modsContainer"></div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeCursoModal()">Cancelar</button>
-      <button class="btn btn-primary" onclick="salvarCurso()">💾 Salvar curso</button>
+    <div class="modal-ft">
+      <button class="btn btn-ghost" type="button" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" type="button" id="btnSave" onclick="saveCurso()">💾 Salvar curso</button>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
 <div id="toast"></div>
 
+<!-- ═══════════ FIREBASE + APP JS ════════════════ -->
 <script>
-// ══ CONFIG ══════════════════════════════════════════════════════
-const SENHA       = 'decole2025';
-const GITHUB_USER = 'yasvizeu';
-const GITHUB_REPO = 'decole_interno';
-const DATA_FILE   = 'data.json';
-const RAW_URL     = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${DATA_FILE}`;
-const API_URL     = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
-// Token fica no localStorage — nunca no código público
-let GITHUB_TOKEN  = localStorage.getItem('decole_gh_token') || '';
-let cursosData    = [];
-let editingId     = null;
 
-// ══ LOGIN ══════════════════════════════════════════════════════
-function doLogin(){
-  const val = document.getElementById('loginInput').value;
-  const err = document.getElementById('loginError');
-  if(val === SENHA){
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    init();
-  } else {
+// ── Firebase config ───────────────────────────
+firebase.initializeApp({
+  apiKey:            'AIzaSyDnpVi7jwj53E7uzPds8xBz85rN3kPminw',
+  authDomain:        'decole-d9f79.firebaseapp.com',
+  projectId:         'decole-d9f79',
+  storageBucket:     'decole-d9f79.firebasestorage.app',
+  messagingSenderId: '878423782149',
+  appId:             '1:878423782149:web:93e76ff1d44d3dbf6dfd6c'
+});
+const auth = firebase.auth();
+const db   = firebase.firestore();
+
+// ── State ──────────────────────────────────────
+let cursosData = [];
+let editingId  = null;
+let isSaving   = false;
+
+// ── Helpers ────────────────────────────────────
+const $ = id => document.getElementById(id);
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function fmt(v){ const n=parseFloat(v); return isNaN(n)||!v?null:'R$ '+n.toFixed(2).replace('.',','); }
+let toastT;
+function toast(msg, type=''){
+  const t=$('toast'); t.textContent=msg; t.className='show'+(type?' '+type:'');
+  clearTimeout(toastT); toastT=setTimeout(()=>t.className='',3500);
+}
+
+// ── Auth ───────────────────────────────────────
+window.doLogin = async function(){
+  const btn=$('loginBtn'), err=$('loginError');
+  const email=$('loginEmail').value.trim();
+  const pass =$('loginPass').value;
+  if(!email||!pass){ err.textContent='Preencha e-mail e senha.'; err.style.display='block'; return; }
+  btn.textContent='Entrando...'; btn.disabled=true; err.style.display='none';
+  try {
+    await auth.signInWithEmailAndPassword(email, pass);
+  } catch(e){
+    const msgs = {
+      'auth/invalid-credential':    'E-mail ou senha incorretos.',
+      'auth/user-not-found':        'Usuário não encontrado.',
+      'auth/wrong-password':        'Senha incorreta.',
+      'auth/too-many-requests':     'Muitas tentativas. Tente mais tarde.',
+      'auth/invalid-email':         'E-mail inválido.'
+    };
+    err.textContent = msgs[e.code] || 'Erro ao entrar. Tente novamente.';
     err.style.display = 'block';
-    document.getElementById('loginInput').value = '';
+    btn.textContent='Entrar'; btn.disabled=false;
   }
-}
-function doLogout(){
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('loginInput').value = '';
-}
-
-// ══ SIDEBAR ══════════════════════════════════════════════════
-function toggleSidebar(){
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('overlayBg').style.display =
-    document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none';
-}
-function closeSidebar(){
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('overlayBg').style.display = 'none';
-}
-
-// ══ PANELS ══════════════════════════════════════════════════
-const PANELS = {
-  dashboard:  { title:'Dashboard',    sub:'Visão geral dos cursos da Decole' },
-  cursos:     { title:'Cursos',       sub:'Adicione, edite e remova cursos' },
-  configurar: { title:'Configurações',sub:'Configure o token do GitHub' }
 };
-function showPanel(id){
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('panel-'+id).classList.add('active');
-  document.getElementById('nav-'+id).classList.add('active');
-  document.getElementById('pageTitle').textContent = PANELS[id].title;
-  document.getElementById('pageSubtitle').textContent = PANELS[id].sub;
-  closeSidebar();
-  if(id === 'cursos') renderCursos();
-  if(id === 'dashboard') renderDashboard();
-}
 
-// ══ INIT ══════════════════════════════════════════════════════
-function init(){
-  const tokenInput = document.getElementById('ghTokenInput');
-  if(tokenInput) tokenInput.value = GITHUB_TOKEN;
-  loadCursos();
-}
+window.doLogout = async function(){
+  await auth.signOut();
+};
 
-// ══ GITHUB API ════════════════════════════════════════════════
-async function ghRead(){
-  // Lê o data.json do repo (sem autenticação — repo público)
-  try {
-    const res = await fetch(RAW_URL + '?t=' + Date.now());
-    if(!res.ok) return null;
-    return await res.json();
-  } catch(e) { return null; }
-}
-
-async function ghWrite(data){
-  if(!GITHUB_TOKEN) throw new Error('Token não configurado');
-  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-
-  // Pega o SHA atual do arquivo (necessário para atualizar)
-  let sha = null;
-  try {
-    const meta = await fetch(API_URL, {
-      headers: {
-        'Authorization': 'token ' + GITHUB_TOKEN,
-        'Accept': 'application/vnd.github.v3+json'
-      }
-    });
-    if(meta.ok){
-      const json = await meta.json();
-      sha = json.sha;
-    }
-  } catch(e) {}
-
-  const body = {
-    message: 'Atualização de cursos via painel Decole',
-    content,
-    ...(sha ? { sha } : {})
-  };
-
-  const res = await fetch(API_URL, {
-    method: 'PUT',
-    headers: {
-      'Authorization': 'token ' + GITHUB_TOKEN,
-      'Accept': 'application/vnd.github.v3+json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(body)
-  });
-
-  if(!res.ok){
-    const err = await res.json();
-    throw new Error(err.message || 'Erro ao salvar no GitHub');
-  }
-  return await res.json();
-}
-
-// ══ LOAD CURSOS ══════════════════════════════════════════════
-async function loadCursos(){
-  setStatus('loading');
-  const data = await ghRead();
-  if(data && Array.isArray(data.cursos)){
-    cursosData = data.cursos;
+auth.onAuthStateChanged(user => {
+  if(user){
+    $('loginScreen').style.display = 'none';
+    $('app').style.display         = 'block';
+    // User info
+    const name = user.email.split('@')[0];
+    $('userEmail').textContent  = user.email;
+    $('userAvatar').textContent = name[0].toUpperCase();
     setStatus('ok');
+    loadCursos();
   } else {
-    // Sem arquivo ainda ou erro — carrega local
-    cursosData = JSON.parse(localStorage.getItem('decole_cursos') || '[]');
-    setStatus(GITHUB_TOKEN ? 'error' : 'none');
+    $('loginScreen').style.display = 'flex';
+    $('app').style.display         = 'none';
+    $('loginBtn').textContent      = 'Entrar';
+    $('loginBtn').disabled         = false;
   }
-  renderDashboard();
-  renderCursos();
+});
+
+// ── Status ─────────────────────────────────────
+function setStatus(s){
+  const dot=$('statusDot'), txt=$('statusTxt');
+  dot.className='status-dot';
+  if(s==='ok') { dot.classList.add('ok'); txt.textContent='Firebase conectado'; }
+  else if(s==='err'){ dot.classList.add('err'); txt.textContent='Erro na conexão'; }
+  else { txt.textContent='Conectando...'; }
 }
 
-// ══ SALVAR NO GITHUB ══════════════════════════════════════════
-async function saveToGitHub(){
-  const payload = { cursos: cursosData, updatedAt: new Date().toISOString() };
-  await ghWrite(payload);
-  localStorage.setItem('decole_cursos', JSON.stringify(cursosData));
+// ── Panels ─────────────────────────────────────
+const PANELS = {
+  dashboard:{ title:'Dashboard', sub:'Visão geral dos cursos' },
+  cursos:   { title:'Cursos',    sub:'Gerencie os cursos da Decole' }
+};
+window.showPanel = function(id){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  $('panel-'+id).classList.add('active');
+  $('nav-'+id).classList.add('active');
+  $('pageTitle').textContent = PANELS[id].title;
+  $('pageSub').textContent   = PANELS[id].sub;
+  closeSidebar();
+};
+
+// ── Sidebar ────────────────────────────────────
+window.toggleSidebar = function(){
+  $('sidebar').classList.toggle('open');
+  $('overlayBg').style.display = $('sidebar').classList.contains('open') ? 'block':'none';
+};
+function closeSidebar(){
+  $('sidebar').classList.remove('open');
+  $('overlayBg').style.display='none';
+}
+window.closeSidebar = closeSidebar;
+
+// ── Load cursos (realtime) ─────────────────────
+function loadCursos(){
+  const q = db.collection('cursos').orderBy('nome');
+  q.onSnapshot(snap => {
+    cursosData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderDash();
+    renderCursos();
+    $('navBadgeCursos').textContent = cursosData.length;
+  }, err => {
+    console.error(err);
+    setStatus('err');
+    toast('Erro ao carregar cursos.','err');
+  });
 }
 
-// ══ STATUS ══════════════════════════════════════════════════
-function setStatus(state){
-  const dot = document.getElementById('statusDot');
-  const txt = document.getElementById('statusText');
-  dot.className = 'status-dot';
-  if(state === 'ok')    { dot.classList.add('ok');  txt.textContent = 'GitHub conectado'; }
-  else if(state === 'error') { dot.classList.add('err'); txt.textContent = 'Erro na conexão'; }
-  else if(state === 'none')  { txt.textContent = 'Token não configurado'; }
-  else { txt.textContent = 'Verificando...'; }
-}
+// ── Dashboard ──────────────────────────────────
+function renderDash(){
+  const mods   = cursosData.reduce((s,c)=>s+(c.modulos||[]).length,0);
+  const prices = cursosData.map(c=>parseFloat(c.mensalidade)||0).filter(v=>v>0);
+  $('stCursos').textContent  = cursosData.length;
+  $('stModulos').textContent = mods;
+  $('stMensal').textContent  = prices.length ? 'R$ '+Math.min(...prices).toFixed(2).replace('.',',') : '—';
+  $('stUpdate').textContent  = new Date().toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'});
 
-// ══ RENDER DASHBOARD ══════════════════════════════════════════
-function renderDashboard(){
-  const totalModulos = cursosData.reduce((s,c)=> s + (c.modulos||[]).length, 0);
-  const mensals = cursosData.map(c => parseFloat(c.mensalidade)||0).filter(v=>v>0);
-  document.getElementById('statCursos').textContent = cursosData.length;
-  document.getElementById('statModulos').textContent = totalModulos;
-  document.getElementById('statMensal').textContent = mensals.length ? 'R$ '+Math.min(...mensals).toFixed(2).replace('.',',') : '—';
-  document.getElementById('statUpdate').textContent = new Date().toLocaleDateString('pt-BR');
-
-  const tbody = document.getElementById('dashCursosTable');
+  const tb = $('dashTable');
   if(!cursosData.length){
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:30px;">Nenhum curso cadastrado ainda.</td></tr>';
-    return;
+    tb.innerHTML='<tr><td colspan="4" style="padding:30px;text-align:center;color:var(--muted)">Nenhum curso cadastrado.</td></tr>'; return;
   }
-  tbody.innerHTML = cursosData.slice(0,5).map(c=>`
+  tb.innerHTML = cursosData.slice(0,6).map(c=>`
     <tr>
-      <td class="td-title">${c.nome||'—'}</td>
+      <td class="td-name">${esc(c.nome)}</td>
       <td class="td-muted">${(c.modulos||[]).length} módulos</td>
-      <td>${c.mensalidade ? 'R$ '+parseFloat(c.mensalidade).toFixed(2).replace('.',',') : '—'}</td>
-      <td>${c.valorTotal ? 'R$ '+parseFloat(c.valorTotal).toFixed(2).replace('.',',') : '—'}</td>
-    </tr>
-  `).join('');
+      <td>${fmt(c.mensalidade)||'—'}</td>
+      <td>${fmt(c.valorTotal)||'—'}</td>
+    </tr>`).join('');
 }
 
-// ══ RENDER CURSOS TABLE ════════════════════════════════════════
+// ── Cursos table ───────────────────────────────
 function renderCursos(){
-  const tbody = document.getElementById('cursosTable');
+  const tb=$('cursosTable');
   if(!cursosData.length){
-    tbody.innerHTML = `<tr><td colspan="8">
-      <div class="empty-state">
-        <div class="icon">📚</div>
-        <p>Nenhum curso cadastrado. Clique em <strong>+ Novo curso</strong> para começar.</p>
-      </div>
-    </td></tr>`;
+    tb.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📚</div><p>Nenhum curso ainda. Clique em <strong>＋ Novo curso</strong>.</p></div></td></tr>`;
     return;
   }
-  tbody.innerHTML = cursosData.map(c=>`
+  tb.innerHTML = cursosData.map(c=>`
     <tr>
-      <td class="td-title">${c.nome||'—'}</td>
-      <td class="td-muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.paraQuem||'—'}</td>
-      <td class="td-muted">${c.duracao||'—'}</td>
-      <td>${c.mensalidade ? 'R$ '+parseFloat(c.mensalidade).toFixed(2).replace('.',',') : '—'}</td>
-      <td>${c.valorTotal ? 'R$ '+parseFloat(c.valorTotal).toFixed(2).replace('.',',') : '—'}</td>
-      <td class="td-muted" style="font-size:0.8rem;line-height:1.6;">
-        ${c.materialTotal ? '<div>Total: R$ '+parseFloat(c.materialTotal).toFixed(2).replace('.',',')+'</div>' : ''}
-        ${c.materialVista ? '<div>À vista: R$ '+parseFloat(c.materialVista).toFixed(2).replace('.',',')+'</div>' : ''}
-        ${c.materialParcelado ? '<div>Parcelas: '+c.materialParcelado+'</div>' : ''}
-        ${!c.materialTotal && !c.materialVista && !c.materialParcelado ? '—' : ''}
+      <td class="td-name">${esc(c.nome)}</td>
+      <td class="td-muted">${esc(c.paraQuem)}</td>
+      <td class="td-muted">${esc(c.duracao)}</td>
+      <td>${fmt(c.mensalidade)||'—'}</td>
+      <td>${fmt(c.valorTotal)||'—'}</td>
+      <td class="td-muted" style="font-size:0.78rem;line-height:1.7">
+        ${c.materialTotal ? 'Total: '+fmt(c.materialTotal)+'<br>':''}
+        ${c.materialVista ? 'À vista: '+fmt(c.materialVista)+'<br>':''}
+        ${c.materialParcelado ? esc(c.materialParcelado):''}
+        ${!c.materialTotal&&!c.materialVista&&!c.materialParcelado?'—':''}
       </td>
       <td><span class="badge badge-blue">${(c.modulos||[]).length} módulos</span></td>
       <td>
-        <div class="actions">
-          <button class="btn btn-secondary btn-sm btn-icon" onclick="editCurso('${c.id}')" title="Editar">✏️</button>
-          <button class="btn btn-danger btn-sm btn-icon" onclick="deleteCurso('${c.id}')" title="Excluir">🗑️</button>
+        <div class="actions-cell">
+          <button class="btn btn-ghost btn-sm btn-icon" data-edit="${esc(c.id)}" title="Editar">✏️</button>
+          <button class="btn btn-danger btn-sm btn-icon" data-del="${esc(c.id)}" title="Excluir">🗑️</button>
         </div>
       </td>
-    </tr>
-  `).join('');
+    </tr>`).join('');
+
+  tb.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',()=>openModal(b.dataset.edit)));
+  tb.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>delCurso(b.dataset.del)));
 }
 
-// ══ MODAL CURSO ════════════════════════════════════════════════
-function openCursoModal(id){
+// ── Modal ──────────────────────────────────────
+window.openModal = function(id){
   editingId = id || null;
-  document.getElementById('modalTitle').textContent = id ? 'Editar curso' : 'Novo curso';
-  const curso = id ? cursosData.find(c=>c.id===id) : null;
-  document.getElementById('f-nome').value = curso?.nome || '';
-  document.getElementById('f-desc').value = curso?.descricao || '';
-  document.getElementById('f-paraQuem').value = curso?.paraQuem || '';
-  document.getElementById('f-duracao').value = curso?.duracao || '';
-  document.getElementById('f-mensalidade').value = curso?.mensalidade || '';
-  document.getElementById('f-valorTotal').value = curso?.valorTotal || '';
-  document.getElementById('f-materialTotal').value = curso?.materialTotal || '';
-  document.getElementById('f-materialVista').value = curso?.materialVista || '';
-  document.getElementById('f-materialParcelado').value = curso?.materialParcelado || '';
-  const container = document.getElementById('modulesContainer');
-  container.innerHTML = '';
-  const mods = curso?.modulos || [];
-  mods.forEach(m => addModulo(m.titulo, m.descricao, m.id));
-  if(!mods.length) addModulo();
-  document.getElementById('cursoModal').classList.add('open');
-}
-function closeCursoModal(){
-  document.getElementById('cursoModal').classList.remove('open');
-  editingId = null;
-}
-function editCurso(id){ openCursoModal(id); }
+  $('modalTitle').textContent = id ? 'Editar curso' : 'Novo curso';
+  const c = id ? cursosData.find(x=>x.id===id) : null;
 
-function addModulo(titulo='', desc='', modId=''){
-  const container = document.getElementById('modulesContainer');
-  const div = document.createElement('div');
-  div.className = 'module-item';
-  div.dataset.id = modId || 'mod_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
-  div.innerHTML = `
-    <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
-      <input type="text" placeholder="Nome do módulo" value="${titulo}" class="mod-titulo" style="background:transparent;border:none;outline:none;font-size:0.88rem;font-weight:600;color:var(--navy);font-family:inherit;"/>
-      <input type="text" placeholder="Descrição breve..." value="${desc}" class="mod-desc" style="background:transparent;border:none;outline:none;font-size:0.8rem;color:var(--muted);font-family:inherit;"/>
+  $('f-nome').value      = c?.nome            || '';
+  $('f-desc').value      = c?.descricao       || '';
+  $('f-paraQuem').value  = c?.paraQuem        || '';
+  $('f-duracao').value   = c?.duracao         || '';
+  $('f-mensalidade').value = c?.mensalidade   || '';
+  $('f-valorTotal').value  = c?.valorTotal    || '';
+  $('f-matTotal').value  = c?.materialTotal   || '';
+  $('f-matVista').value  = c?.materialVista   || '';
+  $('f-matParc').value   = c?.materialParcelado|| '';
+
+  $('modsContainer').innerHTML='';
+  (c?.modulos||[]).forEach(m=>addMod(m.titulo,m.descricao,m.id));
+  if(!(c?.modulos?.length)) addMod();
+
+  const btn=$('btnSave');
+  btn.textContent='💾 Salvar curso'; btn.disabled=false;
+  isSaving=false;
+  $('modalOverlay').classList.add('open');
+  setTimeout(()=>$('f-nome').focus(),80);
+};
+
+window.closeModal = function(){
+  if(isSaving) return;
+  $('modalOverlay').classList.remove('open');
+  editingId=null;
+};
+
+window.addMod = function(titulo='', desc='', modId=''){
+  const wrap=$('modsContainer');
+  const div=document.createElement('div');
+  div.className='mod-item';
+  div.dataset.id=modId||'mod_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+  div.innerHTML=`
+    <div class="mod-fields">
+      <input type="text" placeholder="Nome do módulo (ex: Introdução à Informática)" class="mod-t"/>
+      <input type="text" placeholder="Descrição breve do módulo..." class="mod-d"/>
     </div>
-    <button class="module-remove" onclick="this.parentElement.remove()" title="Remover">✕</button>
-  `;
-  container.appendChild(div);
-}
+    <button class="mod-del" type="button" title="Remover">✕</button>`;
+  div.querySelector('.mod-t').value=titulo;
+  div.querySelector('.mod-d').value=desc;
+  div.querySelector('.mod-del').addEventListener('click',()=>div.remove());
+  wrap.appendChild(div);
+};
 
-// ══ SALVAR CURSO ══════════════════════════════════════════════
-async function salvarCurso(){
-  const nome = document.getElementById('f-nome').value.trim();
-  if(!nome){ showToast('Informe o nome do curso!','error'); return; }
+// ── Save ───────────────────────────────────────
+window.saveCurso = async function(){
+  if(isSaving) return;
+  const nome=$('f-nome').value.trim();
+  if(!nome){ toast('Informe o nome do curso!','err'); return; }
 
-  const id   = editingId || 'curso_'+Date.now();
-  const slug = nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+  isSaving=true;
+  const btn=$('btnSave');
+  btn.textContent='⏳ Salvando...'; btn.disabled=true;
 
-  const modItems = document.querySelectorAll('#modulesContainer .module-item');
-  const modulos  = Array.from(modItems).map(item=>({
-    id: item.dataset.id,
-    titulo: item.querySelector('.mod-titulo').value.trim(),
-    descricao: item.querySelector('.mod-desc').value.trim()
-  })).filter(m=>m.titulo);
+  try{
+    const id   = editingId || 'curso_'+Date.now();
+    const slug = nome.toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+      .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
 
-  const curso = {
-    id, slug, nome,
-    descricao:         document.getElementById('f-desc').value.trim(),
-    paraQuem:          document.getElementById('f-paraQuem').value.trim(),
-    duracao:           document.getElementById('f-duracao').value.trim(),
-    mensalidade:       document.getElementById('f-mensalidade').value,
-    valorTotal:        document.getElementById('f-valorTotal').value,
-    materialTotal:     document.getElementById('f-materialTotal').value,
-    materialVista:     document.getElementById('f-materialVista').value,
-    materialParcelado: document.getElementById('f-materialParcelado').value.trim(),
-    updatedAt:         new Date().toISOString(),
-    modulos
-  };
+    const modulos = Array.from($('modsContainer').querySelectorAll('.mod-item'))
+      .map(el=>({
+        id:        el.dataset.id,
+        titulo:    el.querySelector('.mod-t').value.trim(),
+        descricao: el.querySelector('.mod-d').value.trim()
+      })).filter(m=>m.titulo);
 
-  const idx = cursosData.findIndex(c=>c.id===id);
-  if(idx>=0) cursosData[idx] = curso; else cursosData.push(curso);
+    const data = {
+      nome, slug,
+      descricao:         $('f-desc').value.trim(),
+      paraQuem:          $('f-paraQuem').value.trim(),
+      duracao:           $('f-duracao').value.trim(),
+      mensalidade:       $('f-mensalidade').value||'',
+      valorTotal:        $('f-valorTotal').value||'',
+      materialTotal:     $('f-matTotal').value||'',
+      materialVista:     $('f-matVista').value||'',
+      materialParcelado: $('f-matParc').value.trim(),
+      modulos,
+      updatedAt: new Date().toISOString()
+    };
 
-  const btnSave = document.querySelector('.modal-footer .btn-primary');
-  btnSave.textContent = '⏳ Salvando...';
-  btnSave.disabled = true;
+    await db.collection('cursos').doc(id).set(data);
+    toast('Curso salvo com sucesso! ✓','ok');
+    closeModal();
 
-  try {
-    await saveToGitHub();
-    showToast('Curso salvo no GitHub! ✓','success');
-    closeCursoModal();
-    renderCursos();
-    renderDashboard();
   } catch(e){
-    showToast('Erro: '+e.message,'error');
+    console.error(e);
+    toast('Erro ao salvar: '+e.message,'err');
+    btn.textContent='💾 Salvar curso'; btn.disabled=false;
   } finally {
-    btnSave.textContent = '💾 Salvar curso';
-    btnSave.disabled = false;
+    isSaving=false;
   }
-}
+};
 
-// ══ DELETAR CURSO ══════════════════════════════════════════════
-async function deleteCurso(id){
-  if(!confirm('Excluir este curso e todos os seus módulos?')) return;
-  cursosData = cursosData.filter(c=>c.id!==id);
-  try {
-    await saveToGitHub();
-    showToast('Curso excluído.','success');
+// ── Delete ─────────────────────────────────────
+async function delCurso(id){
+  if(!confirm('Excluir este curso permanentemente?')) return;
+  try{
+    await db.collection('cursos').doc(id).delete();
+    toast('Curso excluído.','ok');
   } catch(e){
-    showToast('Erro ao excluir: '+e.message,'error');
+    toast('Erro ao excluir: '+e.message,'err');
   }
-  renderCursos();
-  renderDashboard();
 }
 
-// ══ CONFIGURAR TOKEN ══════════════════════════════════════════
-function saveToken(){
-  const val = document.getElementById('ghTokenInput').value.trim();
-  if(!val){ showToast('Cole o token!','error'); return; }
-  GITHUB_TOKEN = val;
-  localStorage.setItem('decole_gh_token', val);
-  showToast('Token salvo!','success');
-  loadCursos();
-}
+// Close modal clicking outside
+$('modalOverlay').addEventListener('click', e=>{ if(e.target===$('modalOverlay')) closeModal(); });
 
-// ══ TOAST ══════════════════════════════════════════════════════
-let toastTimer;
-function showToast(msg, type=''){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'show'+(type?' '+type:'');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>{ t.className=''; },3500);
-}
-
-document.getElementById('cursoModal').addEventListener('click', function(e){
-  if(e.target === this) closeCursoModal();
-});
 </script>
 </body>
 </html>
